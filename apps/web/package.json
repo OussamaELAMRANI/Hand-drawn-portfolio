@@ -1,0 +1,29 @@
+{
+  "name": "web",
+  "type": "module",
+  "private": true,
+  "prettier": "@larevo/config/prettier",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@larevo/ui": "workspace:^",
+    "nuxt": "^4.4.8",
+    "vue": "^3.5.39",
+    "vue-router": "^5.1.0"
+  },
+  "devDependencies": {
+    "@larevo/config": "workspace:^",
+    "@nuxt/eslint": "^1.16.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "eslint": "^10.6.0",
+    "prettier": "^3.7.4",
+    "tailwindcss": "^4.1.0"
+  }
+}

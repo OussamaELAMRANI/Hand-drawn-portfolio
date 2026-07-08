@@ -1,0 +1,7 @@
+{
+  "extends": "@larevo/config/tsconfig/vue",
+  "include": ["src/**/*", "*.config.ts"],
+  "compilerOptions": {
+    "types": ["vite/client", "vitest/globals"]
+  }
+}

@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+@config '../../tailwind.config.ts';
+
+/* Tailwind v4 auto-detection only scans this app's root — the ui package's
+   component classes live outside it and must be registered explicitly */
+@source '../../../../packages/ui/src';

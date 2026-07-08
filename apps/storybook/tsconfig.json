@@ -1,0 +1,7 @@
+{
+  "extends": "@larevo/config/tsconfig/vue",
+  "include": ["src/**/*", ".storybook/**/*", "*.config.ts"],
+  "compilerOptions": {
+    "types": ["vite/client"]
+  }
+}

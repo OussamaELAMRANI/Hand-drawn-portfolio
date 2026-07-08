@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+@config '../../../tailwind.config.ts';
+
+/* Tailwind v4 skips node_modules during auto-detection, so the workspace
+   ui package's classes must be registered as a source explicitly */
+@source '../../../../../packages/ui/src';
