@@ -8,7 +8,7 @@ export default defineNuxtConfig({
       stylistic: false, // you're using Prettier for formatting
     },
   },
-  css: ['~/assets/css/main.css'],
+  css: ['@larevo/config/fonts.css','~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
   },

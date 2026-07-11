@@ -4,3 +4,19 @@
 /* Tailwind v4 skips node_modules during auto-detection, so the workspace
    ui package's classes must be registered as a source explicitly */
 @source '../../../../../packages/ui/src';
+
+/* highlighter-style text selection (from DesignSystem.dc.html) */
+::selection {
+    background: #fce34b;
+    color: #2a2a2a;
+}
+
+/* Shiki dual-theme code blocks (`.shiki-themes`, emitted only when both
+   themes are requested): night mode flips each token to its --shiki-dark var.
+   Must NOT match single-theme output (UiTerminal's github-dark render) —
+   there the vars are undefined and this rule would wipe the token colors. */
+.dark .shiki.shiki-themes,
+.dark .shiki.shiki-themes span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+}

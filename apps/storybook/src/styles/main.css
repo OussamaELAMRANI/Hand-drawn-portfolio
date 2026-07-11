@@ -4,3 +4,13 @@
 /* Tailwind v4 auto-detection only scans this app's root — the ui package's
    component classes live outside it and must be registered explicitly */
 @source '../../../../packages/ui/src';
+
+/* Shiki dual-theme code blocks (`.shiki-themes`, emitted only when both
+   themes are requested): night mode flips each token to its --shiki-dark var.
+   Must NOT match single-theme output (UiTerminal's github-dark render) —
+   there the vars are undefined and this rule would wipe the token colors. */
+.dark .shiki.shiki-themes,
+.dark .shiki.shiki-themes span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+}

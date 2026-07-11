@@ -1,5 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
+  "files": ["./vue-shims.d.ts"],
   "compilerOptions": {
     "jsx": "preserve",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],

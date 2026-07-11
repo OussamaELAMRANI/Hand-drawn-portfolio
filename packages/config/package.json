@@ -11,7 +11,8 @@
     "./vitest": "./vitest.config.base.js",
     "./tsconfig/base": "./tsconfig.base.json",
     "./tsconfig/vue": "./tsconfig.vue.json",
-    "./eslint-rules": "./eslint.rules.js"
+    "./eslint-rules": "./eslint.rules.js",
+    "./fonts.css": "./fonts.css"
   },
   "keywords": [],
   "author": "",

@@ -9,6 +9,11 @@
     ".": "./src/index.ts",
     "./components/*": "./src/components/*"
   },
+  "imports": {
+    "#components/*": "./src/components/*",
+    "#composables/*": "./src/composables/*.ts",
+    "#*": "./src/*"
+  },
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -32,5 +37,9 @@
     "vitest": "^4.1.10",
     "vue": "^3.5.39",
     "vue-tsc": "^3.3.6"
+  },
+  "dependencies": {
+    "roughjs": "^4.6.6",
+    "shiki": "^4.3.1"
   }
 }
