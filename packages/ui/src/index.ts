@@ -36,6 +36,7 @@ export { default as UiTextarea } from './components/UiTextarea/UiTextarea.vue'
 export type { UiTextareaProps } from './components/UiTextarea/UiTextarea.types'
 export { default as UiSelect } from './components/UiSelect/UiSelect.vue'
 export type { UiSelectProps } from './components/UiSelect/UiSelect.types'
+export { default as DarkModeToggle } from './components/DarkModeToggle/DarkModeToggle.vue'
 
 // Composables
 export { useDarkMode } from './composables/useDarkMode'

@@ -8,6 +8,18 @@ export default defineNuxtConfig({
       stylistic: false, // you're using Prettier for formatting
     },
   },
+  app: {
+    head: {
+      script: [
+        {
+          // apply the saved (or OS) theme before first paint to avoid a light flash
+          innerHTML:
+            "(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}})()",
+          tagPosition: 'head',
+        },
+      ],
+    },
+  },
   css: ['@larevo/config/fonts.css','~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
