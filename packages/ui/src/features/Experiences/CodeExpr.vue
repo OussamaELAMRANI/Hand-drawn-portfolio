@@ -80,7 +80,7 @@ withDefaults(defineProps<CodeExprProps>(), {
       </SketchBox>
       <!-- terminal -->
       <div class="rotate-[0.6deg]">
-        <UiTerminal :title="codeTitle" :code="code" :lang="lang" />
+        <UiTerminal :title="codeTitle" :code="code" :lang="lang" typewriter />
       </div>
     </div>
   </section>

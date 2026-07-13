@@ -4,4 +4,8 @@ export interface UiTerminalProps {
     code?: string
     /** any Shiki language id (ts, vue, bash, py, rust, …) */
     lang?: string
+    /** type the code in character by character once scrolled into view */
+    typewriter?: boolean
+    /** typewriter ms per character */
+    typeSpeed?: number
 }

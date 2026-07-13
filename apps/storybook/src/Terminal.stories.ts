@@ -39,6 +39,16 @@ export const Highlighted: Story = {
   }),
 }
 
+/** the code types itself in (character by character) once scrolled into view */
+export const Typewriter: Story = {
+  args: { title: '~/deploy.ts', lang: 'typescript', code: CODE, typewriter: true },
+  render: (args) => ({
+    components: { UiTerminal },
+    setup: () => ({ args }),
+    template: '<div style="padding:16px;"><UiTerminal v-bind="args" /></div>',
+  }),
+}
+
 export const HighlightedVue: Story = {
   args: {
     title: '~/UiButton.vue',

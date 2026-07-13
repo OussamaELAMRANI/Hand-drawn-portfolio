@@ -1,22 +1,43 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import SketchBox from '#components/SketchBox/SketchBox.vue'
 import { useShiki } from '#composables/useShiki'
+import { useTypewriter } from '#composables/useTypewriter'
 import type { UiTerminalProps } from './UiTerminal.types'
 
 const props = withDefaults(
     defineProps<UiTerminalProps>(),
-    { title: '~/terminal', code: undefined, lang: 'text' },
+    { title: '~/terminal', code: undefined, lang: 'text', typewriter: false, typeSpeed: 50 },
 )
 
 // the terminal surface stays #22252B in both themes, so highlighting
 // always uses the dark theme rather than the dual light/dark render
-const { html } = useShiki(
+const { html, ready } = useShiki(
     () => props.code ?? '',
     () => props.lang,
     'dark',
 )
 const highlighted = computed(() => (props.code != null ? html.value : null))
+
+// ── optional typewriter: arm on the Shiki render, type when visible ──
+const codeRef = ref<HTMLElement | null>(null)
+const armed = ref(false)
+
+const { arm, typing, done } = useTypewriter(codeRef, {
+  speed: () => props.typeSpeed,
+  paragraphPause: 0,
+})
+
+watch(
+    [ready, () => props.typewriter],
+    async ([r, tw]) => {
+      if (!r || !tw || armed.value) return
+      // wait for the highlighted HTML to land in the DOM before collecting
+      await nextTick()
+      armed.value = arm()
+    },
+    { immediate: true, flush: 'post' },
+)
 
 // hand-drawn traffic lights: each blob gets its own wobbly radius
 const LIGHTS = [
@@ -38,8 +59,15 @@ const LIGHTS = [
         />
         <span class="ml-[10px] font-mono text-xs text-[#8b909a]">{{ title }}</span>
       </div>
-      <!-- eslint-disable-next-line vue/no-v-html — shiki output, built from escaped code -->
-      <div v-if="highlighted !== null" class="terminal-code" v-html="highlighted" />
+      <!-- eslint-disable vue/no-v-html — shiki output, built from escaped code -->
+      <div
+          v-if="highlighted !== null"
+          ref="codeRef"
+          class="terminal-code"
+          :class="{ invisible: typewriter && !typing && !done }"
+          v-html="highlighted"
+      />
+      <!-- eslint-enable vue/no-v-html -->
       <pre
           v-else
           class="m-0 whitespace-pre-wrap px-5 py-[18px] font-mono text-[13px] leading-[1.65] text-[#d7dbe2]"
@@ -59,5 +87,23 @@ const LIGHTS = [
   font-size: 13px;
   line-height: 1.65;
   white-space: pre-wrap;
+}
+
+/* typewriter caret — terminal green, like the mock */
+.terminal-code :deep([data-typing])::after {
+  content: '▍';
+  margin-left: 1px;
+  color: #a8d8a0;
+  animation: term-blink 1s step-end infinite;
+}
+@keyframes term-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useSlots } from 'vue'
+import { computed, onMounted, ref, useSlots } from 'vue'
 import type { TypewriterParagraph, UiTypewriterProps } from './UiTypewriter.types'
+import { useTypewriter } from '#composables/useTypewriter'
 
 const props = withDefaults(defineProps<UiTypewriterProps>(), {
   paragraphs: () => [],
@@ -20,82 +21,17 @@ const items = computed<TypewriterParagraph[]>(() =>
 )
 
 const rootRef = ref<HTMLElement | null>(null)
-let stopped = false
-let io: IntersectionObserver | undefined
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
-
-interface Entry {
-  node: Text
-  full: string
-}
-
-// typing works on text nodes, so nested markup and components keep their
-// tags/classes while only the visible characters accumulate
-function collect(root: HTMLElement): Entry[] {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
-  const entries: Entry[] = []
-  let n: Node | null
-  while ((n = walker.nextNode())) {
-    const t = n as Text
-    if (t.data.trim()) entries.push({ node: t, full: t.data })
-  }
-  return entries
-}
-
-let entries: Entry[] = []
-let started = false
-
-async function type() {
-  if (started) return
-  started = true
-  for (const e of entries) {
-    const holder = e.node.parentElement
-    if (props.cursor) holder?.setAttribute('data-typing', '')
-    for (let i = 1; i <= e.full.length; i++) {
-      if (stopped) return
-      e.node.data = e.full.slice(0, i)
-      const ch = e.full[i - 1]
-      await sleep(ch === '.' || ch === '!' || ch === '?' ? props.speed * 6 : props.speed)
-    }
-    holder?.removeAttribute('data-typing')
-    if (stopped) return
-    await sleep(props.paragraphPause)
-  }
-  emit('done')
-}
-
-onMounted(() => {
-  const root = rootRef.value
-  if (!root) return
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    emit('done')
-    return
-  }
-  // clear right away (pre-paint) so the SSR'd full text doesn't linger
-  entries = collect(root)
-  entries.forEach((e) => (e.node.data = ''))
-
-  if (!props.startOnVisible) {
-    void type()
-    return
-  }
-  io = new IntersectionObserver(
-    (ents) => {
-      if (ents.some((e) => e.isIntersecting)) {
-        io?.disconnect()
-        void type()
-      }
-    },
-    { threshold: 0.2 },
-  )
-  io.observe(root)
+const { arm } = useTypewriter(rootRef, {
+  speed: () => props.speed,
+  paragraphPause: () => props.paragraphPause,
+  cursor: () => props.cursor,
+  startOnVisible: () => props.startOnVisible,
+  onDone: () => emit('done'),
 })
 
-onBeforeUnmount(() => {
-  stopped = true
-  io?.disconnect()
-})
+// clear right away (pre-paint) so the SSR'd full text doesn't linger
+onMounted(arm)
 </script>
 
 <template>
