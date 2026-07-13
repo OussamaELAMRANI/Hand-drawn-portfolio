@@ -99,11 +99,7 @@ const deployCode = `export async function deploy(app) {
 </script>
 
 <template>
-  <div
-    class="min-h-screen bg-paper font-sans text-ink antialiased
-           [background-image:radial-gradient(#dcdcd4_1.1px,transparent_1.1px)] [background-size:23px_23px]
-           dark:bg-night dark:text-chalk dark:[background-image:radial-gradient(#2c2f37_1.1px,transparent_1.1px)]"
-  >
+  <div>
     <!-- NAV -->
     <nav
       class="sticky top-0 z-50 border-b-2 border-dashed border-ink-200 bg-paper/80 backdrop-blur-md

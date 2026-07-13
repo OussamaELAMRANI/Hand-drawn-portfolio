@@ -1,3 +1,5 @@
+import type { Component } from 'vue'
+
 export interface NavLink {
     label: string
     href: string
@@ -12,4 +14,7 @@ export interface UiNavbarProps {
     links?: NavLink[]
     /** magenta-circled call-to-action; omit to hide */
     cta?: NavLink
+    /** element/component used for links — pass 'NuxtLink' for client-side
+     *  routing (it accepts `href` as an alias of `to`); defaults to 'a' */
+    linkComponent?: string | Component
 }

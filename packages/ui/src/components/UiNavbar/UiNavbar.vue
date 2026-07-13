@@ -1,14 +1,23 @@
 <script setup lang="ts">
+import { computed, resolveDynamicComponent } from 'vue'
 import type { UiNavbarProps } from './UiNavbar.types'
 import SketchBox from '#components/SketchBox/SketchBox.vue'
 
-withDefaults(defineProps<UiNavbarProps>(), {
+const props = withDefaults(defineProps<UiNavbarProps>(), {
   brand: 'Oussama',
-  brandAccent: '.el',
+  brandAccent: '. EL AMRANI',
   brandHref: '#top',
   links: () => [],
   cta: undefined,
+  linkComponent: 'a',
 })
+
+// resolves globally registered components (e.g. Nuxt's NuxtLink) from a string
+const linkIs = computed(() =>
+  typeof props.linkComponent === 'string'
+    ? resolveDynamicComponent(props.linkComponent)
+    : props.linkComponent,
+)
 </script>
 
 <template>
@@ -17,23 +26,26 @@ withDefaults(defineProps<UiNavbarProps>(), {
            dark:border-night-500 dark:bg-night/80"
   >
     <div class="mx-auto flex max-w-[1120px] items-center justify-between gap-5 px-6 py-3.5">
-      <a
+      <component
+        :is="linkIs"
         :href="brandHref"
         class="font-display text-[34px] font-bold leading-none tracking-[.2px] text-ink
                no-underline dark:text-chalk"
       >
         <slot name="brand">{{ brand }}<span class="text-cyan">{{ brandAccent }}</span></slot>
-      </a>
+      </component>
       <div class="hidden items-center gap-[26px] font-hand text-lg md:flex">
-        <a
+        <component
+          :is="linkIs"
           v-for="l in links"
           :key="l.label"
           :href="l.href"
           class="text-ink no-underline dark:text-chalk"
         >
           {{ l.label }}
-        </a>
-        <a
+        </component>
+        <component
+          :is="linkIs"
           v-if="cta"
           :href="cta.href"
           class="no-underline transition-transform hover:-rotate-2 hover:scale-105"
@@ -47,7 +59,7 @@ withDefaults(defineProps<UiNavbarProps>(), {
           >
             {{ cta.label }}
           </SketchBox>
-        </a>
+        </component>
         <slot name="end" />
       </div>
     </div>
