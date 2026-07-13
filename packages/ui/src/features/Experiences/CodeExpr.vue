@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CodeExprProps } from './CodeExpr.types'
+import CommentCode from '#components/CommentCode/CommentCode.vue'
 import SketchBox from '#components/SketchBox/SketchBox.vue'
 import Typography from '#components/Typography/Typography.vue'
 import UiLink from '#components/UiLink/UiLink.vue'
@@ -24,7 +25,7 @@ export async function deploy(app: Service) {
 }`
 
 withDefaults(defineProps<CodeExprProps>(), {
-  eyebrow: '// feature spotlight',
+  eyebrow: 'feature spotlight',
   title: 'From sketch to shipped',
   moreHref: '/projects',
   moreLabel: 'all projects & snippets →',
@@ -37,7 +38,7 @@ withDefaults(defineProps<CodeExprProps>(), {
 
 <template>
   <section id="code" class="mx-auto max-w-[1120px] px-6 pb-10 pt-[50px]">
-    <div class="-rotate-[0.8deg] font-hand text-[19px] text-cyan">{{ eyebrow }}</div>
+    <CommentCode :rotate="-0.8">{{ eyebrow }}</CommentCode>
     <div class="mb-[30px] mt-1.5 flex flex-wrap items-baseline justify-between gap-4">
       <Typography variant="h2" class="!text-[46px]">{{ title }}</Typography>
       <UiLink v-if="moreHref" :href="moreHref" class="whitespace-nowrap font-hand text-lg">

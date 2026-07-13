@@ -6,6 +6,13 @@ export type {
 } from './components/UiButton/UiButton.types'
 export { default as Typography } from './components/Typography/Typography.vue'
 export type { TypographyVariant, TypographyProps } from './components/Typography/Typography.types'
+export { default as CommentCode } from './components/CommentCode/CommentCode.vue'
+export type { CommentCodeProps } from './components/CommentCode/CommentCode.types'
+export { default as UiTypewriter } from './components/UiTypewriter/UiTypewriter.vue'
+export type {
+  TypewriterParagraph,
+  UiTypewriterProps,
+} from './components/UiTypewriter/UiTypewriter.types'
 export { default as SketchBox } from './components/SketchBox/SketchBox.vue'
 export type { SketchBoxProps } from './components/SketchBox/SketchBox.types'
 export { default as UiLink } from './components/UiLink/UiLink.vue'

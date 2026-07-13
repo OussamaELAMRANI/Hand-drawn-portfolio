@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  CommentCode,
   SketchBox,
   Typography,
   UiArrow,
@@ -118,7 +119,7 @@ const deployCode = `export async function deploy(app) {
 
     <!-- HEADER -->
     <header class="mx-auto max-w-[1120px] px-6 pb-2.5 pt-14">
-      <div class="-rotate-1 font-hand text-[19px] text-cyan">// the sketchbook</div>
+      <CommentCode>the sketchbook</CommentCode>
       <Typography variant="h1" class="mb-2 mt-1.5">Design System</Typography>
       <Typography variant="body" class="max-w-[60ch]">
         Every token and component the portfolio is built from — colors, type, buttons, tags, cards,

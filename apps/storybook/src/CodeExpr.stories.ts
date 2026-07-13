@@ -15,7 +15,7 @@ export const Default: Story = {}
 
 export const CustomSnippet: Story = {
   args: {
-    eyebrow: '// how it works',
+    eyebrow: 'how it works',
     title: 'Sketch, then ship',
     codeTitle: '~/app/server.ts',
     lang: 'ts',

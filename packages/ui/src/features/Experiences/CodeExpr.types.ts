@@ -1,5 +1,5 @@
 export interface CodeExprProps {
-    /** hand-written eyebrow above the title */
+    /** hand-written eyebrow above the title (the leading `//` is added automatically) */
     eyebrow?: string
     title?: string
     /** "all projects" link; empty string hides it */
