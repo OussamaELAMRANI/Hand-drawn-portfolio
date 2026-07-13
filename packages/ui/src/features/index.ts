@@ -1,0 +1,5 @@
+export * from './Hero'
+export * from './Skills'
+export * from './SwipeDeck'
+export * from './Experiences'
+export * from './Footer'

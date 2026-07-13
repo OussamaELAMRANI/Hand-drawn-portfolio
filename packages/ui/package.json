@@ -7,11 +7,13 @@
   "prettier": "@larevo/config/prettier",
   "exports": {
     ".": "./src/index.ts",
-    "./components/*": "./src/components/*"
+    "./components/*": "./src/components/*",
+    "./features/*": "./src/features/*"
   },
   "imports": {
     "#components/*": "./src/components/*",
     "#composables/*": "./src/composables/*.ts",
+    "#features/*": "./src/features/*",
     "#*": "./src/*"
   },
   "scripts": {
