@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import SketchBox from '#components/SketchBox/SketchBox.vue'
+import { useDarkMode } from '#composables/useDarkMode'
 
 // the `dark` class on <html> is the single source of truth (Tailwind
-// darkMode:'class'; @larevo/ui's useDarkMode observes the same class).
-// An inline head script applies the saved theme pre-paint, so on mount
-// we only read the result.
-const isDark = ref(false)
+// darkMode:'class'). An inline head script applies the saved (or OS) theme
+// pre-paint; this global instance also follows live OS scheme changes until
+// the user makes an explicit choice by clicking the toggle.
+const { isDark } = useDarkMode({ syncSystem: true })
 const mounted = ref(false)
 
 onMounted(() => {
-  isDark.value = document.documentElement.classList.contains('dark')
   mounted.value = true
 })
 
 function toggle() {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
+  const next = !isDark.value
+  document.documentElement.classList.toggle('dark', next)
   try {
-    localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+    localStorage.setItem('theme', next ? 'dark' : 'light')
   } catch {
     // private mode / storage disabled — theme just won't persist
   }
