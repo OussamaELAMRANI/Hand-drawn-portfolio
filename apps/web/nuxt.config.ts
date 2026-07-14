@@ -20,7 +20,11 @@ export default defineNuxtConfig({
       ],
     },
   },
-  css: ['@larevo/config/fonts.css','~/assets/css/main.css'],
+  runtimeConfig: {
+    // server-only; overridden by NUXT_DATABASE_URL in .env
+    databaseUrl: '',
+  },
+  css: ['@larevo/config/fonts.css', '~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
   },

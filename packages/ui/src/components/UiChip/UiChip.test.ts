@@ -38,4 +38,28 @@ describe('UiChip', () => {
     expect(wrapper.findComponent(SketchBox).props('color')).toBe('#3178C6')
     expect(wrapper.findComponent(SketchBox).classes()).not.toContain('text-magenta')
   })
+
+  it('auto-detects a brand color from the label when stroke/color are omitted', () => {
+    const wrapper = mount(UiChip, {
+      props: { variant: 'sketch' },
+      slots: { default: 'TypeScript' },
+    })
+    expect(wrapper.findComponent(SketchBox).props('color')).toBe('#3178C6')
+  })
+
+  it('falls back to gray when the label matches no known skill', () => {
+    const wrapper = mount(UiChip, {
+      props: { variant: 'sketch' },
+      slots: { default: 'Something Else' },
+    })
+    expect(wrapper.findComponent(SketchBox).props('color')).toBe('#b9b9af')
+  })
+
+  it('an explicit stroke wins over auto-detection even for a known skill label', () => {
+    const wrapper = mount(UiChip, {
+      props: { variant: 'sketch', stroke: 'gray' },
+      slots: { default: 'TypeScript' },
+    })
+    expect(wrapper.findComponent(SketchBox).props('color')).toBe('#b9b9af')
+  })
 })

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SkillsProps } from './Skills.types'
-import { skillColor } from './skillColors'
 import UiChip from '#components/UiChip/UiChip.vue'
 import Typography from '#components/Typography/Typography.vue'
 
@@ -42,7 +41,7 @@ withDefaults(defineProps<SkillsProps>(), {
         v-for="skill in skills"
         :key="skill"
         variant="sketch"
-        :color="colored ? skillColor(skill) : undefined"
+        :stroke="colored ? undefined : 'gray'"
       >
         {{ skill }}
       </UiChip>
