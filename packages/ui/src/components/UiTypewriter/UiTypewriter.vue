@@ -40,9 +40,12 @@ onMounted(arm)
     <slot v-if="useSlot" />
     <template v-else>
       <template v-for="(p, i) in items" :key="i">
-        <!-- html paragraphs are an explicit trusted-markup opt-in (see types) -->
-        <!-- eslint-disable-next-line vue/no-v-html, vue/no-v-text-v-html-on-component -->
-        <component :is="p.tag ?? 'p'" v-if="p.html" :class="p.class" v-html="p.content" />
+        <!-- html paragraphs are an explicit trusted-markup opt-in (see types).
+             always a <p> here, not <component :is>: Vue's SSR renderer silently
+             drops v-html through a dynamic tag, so custom `tag` only applies
+             to plain-text paragraphs below -->
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <p v-if="p.html" :class="p.class" v-html="p.content" />
         <component :is="p.tag ?? 'p'" v-else :class="p.class">{{ p.content }}</component>
       </template>
     </template>
@@ -52,9 +55,12 @@ onMounted(arm)
     <slot v-if="useSlot" />
     <template v-else>
       <template v-for="(p, i) in items" :key="i">
-        <!-- html paragraphs are an explicit trusted-markup opt-in (see types) -->
-        <!-- eslint-disable-next-line vue/no-v-html, vue/no-v-text-v-html-on-component -->
-        <component :is="p.tag ?? 'p'" v-if="p.html" :class="p.class" v-html="p.content" />
+        <!-- html paragraphs are an explicit trusted-markup opt-in (see types).
+             always a <p> here, not <component :is>: Vue's SSR renderer silently
+             drops v-html through a dynamic tag, so custom `tag` only applies
+             to plain-text paragraphs below -->
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <p v-if="p.html" :class="p.class" v-html="p.content" />
         <component :is="p.tag ?? 'p'" v-else :class="p.class">{{ p.content }}</component>
       </template>
     </template>

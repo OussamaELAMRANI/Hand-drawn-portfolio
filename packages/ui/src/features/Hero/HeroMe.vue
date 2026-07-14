@@ -1,17 +1,64 @@
-<script setup lang="ts">
-import CommentCode from '#components/CommentCode/CommentCode.vue'
-import UiButton from '#components/UiButton/UiButton.vue'
-import UiHighlight from '#components/UiHighlight/UiHighlight.vue'
-import UiLink from '#components/UiLink/UiLink.vue'
-import UiTypewriter from '#components/UiTypewriter/UiTypewriter.vue'
-import { SwipeDeck, type SwipeCardItem } from '../SwipeDeck'
+<script lang="ts">
+import type { JSONContent } from '../../components/UiEditor/UiEditor.types'
+import type { SwipeCardItem } from '../SwipeDeck/SwipeDeck.types'
 
-const heroCards: SwipeCardItem[] = [
+// `defineProps()` defaults are hoisted out of setup(), so these live in a
+// plain <script> block (true module scope) instead of <script setup>.
+export const defaultTagline: JSONContent = {
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+      content: [
+        { type: 'text', text: 'I build ' },
+        { type: 'text', text: 'solid web products', marks: [{ type: 'highlight' }] },
+        { type: 'text', text: ' & chase good light in far-off places.' },
+      ],
+    },
+  ],
+}
+
+export const defaultBio: JSONContent = {
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+      content: [
+        { type: 'text', text: 'Senior Full-Stack Engineer. I ship end-to-end with ' },
+        { type: 'text', text: 'TypeScript / Node.js', marks: [{ type: 'bold' }] },
+        { type: 'text', text: ' on the back, ' },
+        { type: 'text', text: 'Next.js, Nuxt & Vue', marks: [{ type: 'bold' }] },
+        { type: 'text', text: ' on the front, and lean on ' },
+        { type: 'text', text: 'DDD', marks: [{ type: 'bold' }] },
+        { type: 'text', text: ', Postgres and clean test suites to keep it honest.' },
+      ],
+    },
+  ],
+}
+
+export const defaultCards: SwipeCardItem[] = [
   { caption: 'code · coffee · airports', note: '— the daily loop' },
   { caption: 'Lisbon', note: 'shipped from a rooftop' },
   { caption: 'Marrakech', note: 'home base & mint tea' },
   { caption: 'Bali', note: 'standups at sunrise' },
 ]
+</script>
+
+<script setup lang="ts">
+import CommentCode from '#components/CommentCode/CommentCode.vue'
+import UiButton from '#components/UiButton/UiButton.vue'
+import UiLink from '#components/UiLink/UiLink.vue'
+import UiTypewriter from '#components/UiTypewriter/UiTypewriter.vue'
+import RichDoc from '#components/RichDoc/RichDoc.vue'
+import { SwipeDeck } from '../SwipeDeck'
+import type { HeroMeProps } from './HeroMe.types'
+
+withDefaults(defineProps<HeroMeProps>(), {
+  name: 'Oussama EL AMRANI',
+  tagline: () => defaultTagline,
+  bio: () => defaultBio,
+  cards: () => defaultCards,
+})
 </script>
 
 <template>
@@ -23,19 +70,17 @@ const heroCards: SwipeCardItem[] = [
       <h1
         class="mb-[18px] mt-2 font-display text-[56px] font-bold leading-[0.98] tracking-[.5px] md:text-[72px]"
       >
-        Oussama <span class="whitespace-nowrap">EL AMRANI</span><span class="text-magenta">.</span>
+        {{ name }}<span class="text-magenta">.</span>
       </h1>
       <UiTypewriter :speed="18">
-        <p class="mb-[22px] max-w-[30ch] font-display text-[32px] leading-[1.15]">
-          I build <UiHighlight class="text-[32px]">solid web products</UiHighlight> &amp; chase
-          good light in far-off places.
-        </p>
-        <p class="mb-[30px] max-w-[52ch] text-body text-ink-600 dark:text-chalk-600">
-          Senior Full-Stack Engineer. I ship end-to-end with
-          <strong>TypeScript / Node.js</strong> on the back,
-          <strong>Next.js, Nuxt &amp; Vue</strong> on the front, and lean on
-          <strong>DDD</strong>, Postgres and clean test suites to keep it honest.
-        </p>
+        <RichDoc
+          :doc="tagline"
+          paragraph-class="mb-[22px] max-w-[30ch] font-display text-[32px] leading-[1.15]"
+        />
+        <RichDoc
+          :doc="bio"
+          paragraph-class="mb-[30px] max-w-[52ch] text-body text-ink-600 dark:text-chalk-600"
+        />
       </UiTypewriter>
       <div class="flex flex-wrap items-center gap-[18px]">
         <UiButton href="#code" variant="sketch">See my work →</UiButton>
@@ -45,7 +90,7 @@ const heroCards: SwipeCardItem[] = [
 
     <!-- polaroid deck -->
     <div class="justify-self-center">
-      <SwipeDeck :cards="heroCards" class="w-[270px]" />
+      <SwipeDeck :cards="cards" class="w-[270px]" />
     </div>
   </section>
 </template>

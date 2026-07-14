@@ -3,7 +3,7 @@ export interface TypewriterParagraph {
     content: string
     /** render `content` with v-html — only pass trusted markup */
     html?: boolean
-    /** wrapper tag (default 'p') */
+    /** wrapper tag (default 'p') — ignored when `html` is true, always renders as <p> */
     tag?: string
     /** classes for the wrapper */
     class?: string
