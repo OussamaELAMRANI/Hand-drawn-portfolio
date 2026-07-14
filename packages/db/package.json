@@ -1,0 +1,32 @@
+{
+  "name": "@larevo/db",
+  "version": "1.0.0",
+  "description": "Drizzle ORM schema, client factory and migrations",
+  "private": true,
+  "type": "module",
+  "prettier": "@larevo/config/prettier",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./password": "./src/password.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx --env-file=.env src/seed.ts",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.2",
+    "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "@larevo/config": "workspace:^",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.4",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.20.0",
+    "typescript": "5.9.2"
+  }
+}

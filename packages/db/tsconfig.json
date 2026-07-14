@@ -1,0 +1,7 @@
+{
+  "extends": "@larevo/config/tsconfig/base",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "drizzle.config.ts"]
+}
