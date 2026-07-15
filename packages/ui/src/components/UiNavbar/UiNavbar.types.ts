@@ -3,6 +3,8 @@ import type { Component } from 'vue'
 export interface NavLink {
     label: string
     href: string
+    /** extra classes on the rendered link, e.g. to highlight the current page */
+    class?: string
 }
 
 export interface UiNavbarProps {

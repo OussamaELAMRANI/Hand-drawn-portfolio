@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CardVariant, UiCardProps } from './UiCard.types'
+import type { CardAccent, CardVariant, UiCardProps } from './UiCard.types'
 import SketchBox from '#components/SketchBox/SketchBox.vue'
 import UiPin from '#components/UiPin/UiPin.vue'
 import UiTape from '#components/UiTape/UiTape.vue'
 
-const props = withDefaults(defineProps<UiCardProps>(), { variant: 'index' })
+const props = withDefaults(defineProps<UiCardProps>(), { variant: 'index', accent: undefined })
+
+const DEFAULT_ACCENT: Record<CardVariant, CardAccent> = { index: 'pin', polaroid: 'tape', callout: 'none' }
+const accent = computed(() => props.accent ?? DEFAULT_ACCENT[props.variant])
 
 const SPECS: Record<
     CardVariant,
@@ -44,11 +47,11 @@ const spec = computed(() => SPECS[props.variant])
       :class="spec.class"
   >
     <UiPin
-        v-if="variant === 'index'"
+        v-if="accent === 'pin'"
         class="absolute -top-[9px] left-1/2 -translate-x-1/2"
     />
     <UiTape
-        v-if="variant === 'polaroid'"
+        v-if="accent === 'tape'"
         class="absolute -top-[11px] left-1/2 -translate-x-1/2"
     />
     <slot />

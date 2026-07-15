@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components'
 import {
   CommentCode,
   SketchBox,
@@ -10,6 +11,7 @@ import {
   UiChip,
   UiHighlight,
   UiLink,
+  UiNavbar,
   UiPill,
   UiPin,
   UiTape,
@@ -21,6 +23,16 @@ useHead({
   title: 'Design System — Oussama.el',
   htmlAttrs: { class: 'scroll-smooth' },
 })
+
+const { user, isAdmin, logout } = useAuth()
+
+const navLinks = [
+  { label: 'Experience', href: '/experience' },
+  { label: 'Code', href: '/#code' },
+  { label: 'Travels', href: '/#travels' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Design System', href: '/design-system', class: 'rounded-sm bg-marker px-1.5 py-0.5 -rotate-1' },
+]
 
 const toc = [
   { label: 'Colors', href: '#colors' },
@@ -101,17 +113,39 @@ const deployCode = `export async function deploy(app) {
 <template>
   <div>
     <!-- NAV -->
-    <nav
-      class="sticky top-0 z-50 border-b-2 border-dashed border-ink-200 bg-paper/80 backdrop-blur-md
-             dark:border-night-500 dark:bg-night/80"
+    <UiNavbar
+      :links="navLinks"
+      :cta="{ label: 'Hire Me', href: '/#book' }"
+      :link-component="NuxtLink"
     >
-      <div class="mx-auto flex max-w-[1120px] items-center justify-between gap-5 px-6 py-3.5">
-        <NuxtLink to="/" class="font-display text-[34px] font-bold leading-none">
-          Oussama<span class="text-cyan"> EL AMRANI</span>
+      <template #end>
+        <template v-if="user">
+          <NuxtLink
+            v-if="isAdmin"
+            to="/admin"
+            class="font-hand text-lg text-cyan underline decoration-wavy underline-offset-4
+                   transition-colors hover:text-magenta"
+          >
+            ✎ Admin
+          </NuxtLink>
+          <button
+            class="cursor-pointer font-hand text-lg text-ink-400 transition-colors
+                   hover:text-magenta dark:text-chalk-500"
+            @click="logout()"
+          >
+            logout
+          </button>
+        </template>
+        <NuxtLink
+          v-else
+          to="/login"
+          class="font-hand text-lg text-ink-400 no-underline transition-colors hover:text-cyan
+                 dark:text-chalk-500"
+        >
+          login
         </NuxtLink>
-        <div class="font-hand text-lg text-ink-400 dark:text-chalk-500">Design System</div>
-      </div>
-    </nav>
+      </template>
+    </UiNavbar>
 
     <!-- HEADER -->
     <header class="mx-auto max-w-[1120px] px-6 pb-2.5 pt-14">

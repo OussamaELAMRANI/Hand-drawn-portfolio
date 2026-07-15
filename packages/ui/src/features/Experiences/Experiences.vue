@@ -144,18 +144,22 @@ function closeRole() {
             class="relative shrink-0 basis-full px-[13px] md:basis-1/3"
             :aria-hidden="i < index || i >= index + visibleCount ? 'true' : undefined"
           >
-            <SketchBox
-              v-if="role.endDate === null"
-              tag="span"
-              color="#FCE34B"
-              :stroke-width="1.6"
-              class="absolute -top-2 z-10 rotate-3 bg-marker px-2.5 py-1 font-hand text-[12.5px] text-ink shadow-sticky"
-            >
-              I'm now at &#8594;
-            </SketchBox>
+            <span v-if="role.endDate === null" class="absolute -top-2 z-10">
+              <SketchBox
+                tag="span"
+                color="#FCE34B"
+                :stroke-width="1.6"
+                class="rotate-3 bg-marker px-2.5 py-1 font-hand text-[12.5px] text-ink shadow-sticky"
+              >
+                I'm now at &#8594;
+              </SketchBox>
+            </span>
             <UiCard
               variant="index"
-              class="h-full cursor-pointer"
+              class="flex h-full flex-col cursor-pointer ring-2 ring-transparent transition-[box-shadow]
+                     duration-200 ease-out hover:shadow-lifted hover:ring-cyan/50
+                     focus-visible:shadow-lifted focus-visible:ring-cyan/50
+                     focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
               :stroke-color="role.endDate === null ? '#FCE34B' : undefined"
               role="button"
               tabindex="0"
@@ -164,12 +168,16 @@ function closeRole() {
               @keydown.enter="openRole(role, $event)"
               @keydown.space.prevent="openRole(role, $event)"
             >
-              <div class="mb-1.5 font-mono text-[11.5px] text-cyan">{{ role.period }}</div>
-              <div class="font-display text-[30px] leading-[1.05]">{{ role.title }}</div>
+              <div class="mb-1.5 flex flex-wrap items-baseline justify-between gap-2">
+                <div class="font-display text-[30px] leading-[1.05]">{{ role.title }}</div>
+                <div class="font-mono text-[11.5px] text-cyan">{{ role.period }}</div>
+              </div>
               <div class="mb-3 font-hand text-[17px] text-ink-400 dark:text-chalk-500">
                 {{ role.company }}
               </div>
-              <p class="mb-3 text-[14.5px] text-ink-600 dark:text-chalk-600">{{ role.blurb }}</p>
+              <p class="mb-3 line-clamp-3 flex-1 text-[14.5px] text-ink-600 dark:text-chalk-600">
+                {{ role.blurb }}
+              </p>
               <div class="flex flex-wrap gap-1.5">
                 <UiChip v-for="tag in role.tags" :key="tag">{{ tag }}</UiChip>
               </div>
@@ -219,18 +227,22 @@ function closeRole() {
     <!-- pinned card grid -->
     <div v-else class="grid gap-[26px] md:grid-cols-3">
       <div v-for="(role, i) in roles" :key="i" class="relative">
-        <SketchBox
-          v-if="role.endDate === null"
-          tag="span"
-          color="#FCE34B"
-          :stroke-width="1.6"
-          class="absolute -top-2 right-7 z-10 rotate-3 bg-marker px-2.5 py-1 font-hand text-[12.5px] text-ink shadow-sticky"
-        >
-          I'm now at →
-        </SketchBox>
+        <span v-if="role.endDate === null" class="absolute -top-2 right-7 z-10">
+          <SketchBox
+            tag="span"
+            color="#FCE34B"
+            :stroke-width="1.6"
+            class="rotate-3 bg-marker px-2.5 py-1 font-hand text-[12.5px] text-ink shadow-sticky"
+          >
+            I'm now at →
+          </SketchBox>
+        </span>
         <UiCard
           variant="index"
-          class="cursor-pointer"
+          class="flex h-full flex-col cursor-pointer ring-2 ring-transparent transition-[box-shadow]
+                 duration-200 ease-out hover:shadow-lifted hover:ring-cyan/50
+                 focus-visible:shadow-lifted focus-visible:ring-cyan/50
+                 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
           :stroke-color="role.endDate === null ? '#FCE34B' : undefined"
           role="button"
           tabindex="0"
@@ -239,12 +251,16 @@ function closeRole() {
           @keydown.enter="openRole(role, $event)"
           @keydown.space.prevent="openRole(role, $event)"
         >
-          <div class="mb-1.5 font-mono text-[11.5px] text-cyan">{{ role.period }}</div>
-          <div class="font-display text-[30px] leading-[1.05]">{{ role.title }}</div>
+          <div class="mb-1.5 flex flex-wrap items-baseline justify-between gap-2">
+            <div class="font-display text-[30px] leading-[1.05]">{{ role.title }}</div>
+            <div class="font-mono text-[11.5px] text-cyan">{{ role.period }}</div>
+          </div>
           <div class="mb-3 font-hand text-[17px] text-ink-400 dark:text-chalk-500">
             {{ role.company }}
           </div>
-          <p class="mb-3 text-[14.5px] text-ink-600 dark:text-chalk-600">{{ role.blurb }}</p>
+          <p class="mb-3 line-clamp-3 flex-1 text-[14.5px] text-ink-600 dark:text-chalk-600">
+            {{ role.blurb }}
+          </p>
           <div class="flex flex-wrap gap-1.5">
             <UiChip v-for="tag in role.tags" :key="tag">{{ tag }}</UiChip>
           </div>

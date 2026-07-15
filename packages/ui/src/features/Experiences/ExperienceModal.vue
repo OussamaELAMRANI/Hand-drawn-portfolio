@@ -95,16 +95,16 @@ const formatDate = (d: string | null | undefined) =>
             class="relative mx-auto w-full max-w-[680px]"
             style="transform-origin: center center"
           >
-            <SketchBox
-              v-if="role.endDate === null"
-              tag="span"
-              color="#FCE34B"
-              :stroke-width="1.6"
-              class="absolute -top-3 right-10 z-10 rotate-3 bg-marker px-2.5 py-1 font-hand
-                     text-[13px] text-ink shadow-sticky"
-            >
-              I'm now at →
-            </SketchBox>
+            <span v-if="role.endDate === null" class="absolute -top-3 right-10 z-10">
+              <SketchBox
+                tag="span"
+                color="#FCE34B"
+                :stroke-width="1.6"
+                class="rotate-3 bg-marker px-2.5 py-1 font-hand text-[13px] text-ink shadow-sticky"
+              >
+                I'm now at →
+              </SketchBox>
+            </span>
             <UiCard
               variant="index"
               class="!rotate-0 hover:!translate-y-0 relative"

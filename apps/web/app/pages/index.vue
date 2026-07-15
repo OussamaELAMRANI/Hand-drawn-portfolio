@@ -24,15 +24,11 @@ const { data: experiences } = await useFetch<ApiExperience[]>('/api/experiences'
 
 // the "Engineering Notebook" card shape (period/title/company/blurb) predates
 // the API — map the DB record into it here rather than reshaping the component
-function formatYear(d: string | null) {
-  return d ? new Date(d).getFullYear().toString() : undefined
-}
-
 function toNotebookRole(e: ApiExperience): NotebookRole {
   const blurb = richTextToPlain(e.description)
   return {
     id: e.id,
-    period: `${formatYear(e.startDate) ?? '—'} — ${formatYear(e.endDate) ?? 'now'}`,
+    period: `${formatMonth(e.startDate) || '—'} — ${formatMonth(e.endDate) || 'now'}`,
     title: e.title,
     company: e.roles.join(' · ') || 'Freelance',
     blurb: blurb.length > 160 ? `${blurb.slice(0, 160).trimEnd()}…` : blurb,
@@ -82,7 +78,6 @@ const navLinks = [
   { label: 'Travels', href: '#travels' },
   { label: 'Blog', href: '/blog' },
   { label: 'Design System', href: '/design-system' },
-  { label: 'Book Me', href: '#book' },
 ]
 </script>
 
@@ -90,6 +85,7 @@ const navLinks = [
   <div>
     <!-- ============ NAV ============ -->
     <UiNavbar
+      brand-href="#top"
       :links="navLinks"
       :cta="{ label: 'Hire Me', href: '#book' }"
       :link-component="NuxtLink"
