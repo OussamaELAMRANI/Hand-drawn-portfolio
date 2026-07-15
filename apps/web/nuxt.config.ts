@@ -53,6 +53,9 @@ export default defineNuxtConfig({
     // booking form's CAPTCHA token; verification no-ops (passes) without it,
     // matching this app's dev-convenience pattern for other optional integrations
     turnstileSecretKey: '',
+    // server-only; overridden by NUXT_BOOKING_RATE_LIMIT_MAX — max booking
+    // requests a single IP can make per rolling 24h window
+    bookingRateLimitMax: 5,
     public: {
       // client-exposed by design (Turnstile site keys are meant to be public);
       // overridden by NUXT_PUBLIC_TURNSTILE_SITE_KEY — the CAPTCHA widget

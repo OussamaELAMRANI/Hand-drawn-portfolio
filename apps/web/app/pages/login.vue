@@ -1,23 +1,32 @@
 <script setup lang="ts">
-import { SketchBox, UiButton, UiInput } from '@larevo/ui'
+import { SketchBox, UiButton, UiInput, useTurnstile } from '@larevo/ui'
 
 const { login } = useAuth()
+const { public: publicConfig } = useRuntimeConfig()
 
 const email = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
 
+// no-ops (widget never renders, canSubmit ignores it) when turnstileSiteKey isn't configured
+const { captchaEl, token: captchaToken, reset: resetCaptcha } = useTurnstile(publicConfig.turnstileSiteKey)
+
+const canSubmit = computed(() => !publicConfig.turnstileSiteKey || !!captchaToken.value)
+
 async function submit() {
-  if (loading.value) return
+  if (loading.value || !canSubmit.value) return
   error.value = ''
   loading.value = true
   try {
-    await login(email.value, password.value)
+    await login(email.value, password.value, captchaToken.value)
     await navigateTo('/admin')
   } catch (e) {
     error.value =
       (e as { data?: { statusMessage?: string } }).data?.statusMessage ?? 'Login failed'
+    // a failed submission may have consumed or expired the token — Turnstile
+    // tokens are single-use, so the widget needs a fresh challenge to retry
+    resetCaptcha()
   } finally {
     loading.value = false
   }
@@ -49,6 +58,8 @@ async function submit() {
           <UiInput v-model="password" type="password" placeholder="••••••••" />
         </label>
 
+        <div v-if="publicConfig.turnstileSiteKey" ref="captchaEl" class="flex justify-center" />
+
         <p v-if="error" class="font-hand text-[15px] text-magenta">{{ error }}</p>
 
         <div class="mt-2 flex items-center justify-between">
@@ -58,7 +69,7 @@ async function submit() {
           >
             ← back to site
           </NuxtLink>
-          <UiButton :disabled="loading" @click="submit">
+          <UiButton :disabled="loading || !canSubmit" @click="submit">
             {{ loading ? 'signing in…' : 'Sign in' }}
           </UiButton>
         </div>

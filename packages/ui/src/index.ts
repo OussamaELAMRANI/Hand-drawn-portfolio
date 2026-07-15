@@ -66,3 +66,4 @@ export type { SketchShape, RoughFillStyle, RoughShapeOptions } from './composabl
 export { useSweepReveal } from './composables/useSweepReveal'
 export { useTypewriter } from './composables/useTypewriter'
 export type { UseTypewriterOptions } from './composables/useTypewriter'
+export { useTurnstile } from './composables/useTurnstile'

@@ -16,10 +16,10 @@ export function useAuth() {
     fetched.value = true
   }
 
-  async function login(email: string, password: string) {
+  async function login(email: string, password: string, captchaToken: string) {
     user.value = await $fetch<AuthUser>('/api/auth/login', {
       method: 'POST',
-      body: { email, password },
+      body: { email, password, captchaToken },
     })
     fetched.value = true
   }

@@ -71,6 +71,8 @@ export const bookingInput = z.object({
 export const loginInput = z.object({
   email: z.email().transform((v) => v.toLowerCase()),
   password: z.string().min(1),
+  // Cloudflare Turnstile token — verified server-side, never persisted
+  captchaToken: z.string().max(2000).default(''),
 })
 
 export function slugify(text: string): string {
