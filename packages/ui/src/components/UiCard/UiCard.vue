@@ -38,7 +38,11 @@ const spec = computed(() => SPECS[props.variant])
 </script>
 
 <template>
-  <SketchBox :color="spec.color" :stroke-width="spec.strokeWidth" :class="spec.class">
+  <SketchBox
+      :color="props.strokeColor ?? spec.color"
+      :stroke-width="props.strokeColor ? spec.strokeWidth + 0.6 : spec.strokeWidth"
+      :class="spec.class"
+  >
     <UiPin
         v-if="variant === 'index'"
         class="absolute -top-[9px] left-1/2 -translate-x-1/2"

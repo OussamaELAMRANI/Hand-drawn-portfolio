@@ -157,8 +157,7 @@ function onKeydown(e: KeyboardEvent) {
 <template>
   <div class="select-none">
     <div
-      class="relative outline-none focus-visible:outline-2 focus-visible:outline-offset-4
-             focus-visible:outline-current"
+      class="relative outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
       tabindex="0"
       role="group"
       aria-roledescription="card deck"
@@ -173,10 +172,7 @@ function onKeydown(e: KeyboardEvent) {
           i === 0 ? 'relative' : 'absolute inset-0',
           i === 0 && dragOn === 'all' && 'cursor-grab active:cursor-grabbing',
         ]"
-        :style="[
-          i === 0 ? topStyle : behindStyle(i),
-          { zIndex: visible.length - i },
-        ]"
+        :style="[i === 0 ? topStyle : behindStyle(i), { zIndex: visible.length - i }]"
         v-on="
           i === 0
             ? {
@@ -194,7 +190,10 @@ function onKeydown(e: KeyboardEvent) {
           :class="i === 0 ? 'shadow-lifted' : 'shadow-sticky'"
         >
           <UiTape v-if="accent === 'tape'" class="absolute -top-[11px] left-1/2 -translate-x-1/2" />
-          <UiPin v-else-if="accent === 'pin'" class="absolute -top-[9px] left-1/2 -translate-x-1/2" />
+          <UiPin
+            v-else-if="accent === 'pin'"
+            class="absolute -top-[9px] left-1/2 -translate-x-1/2"
+          />
           <slot :card="v.card" :index="v.idx">
             <img
               v-if="v.card.image"
@@ -205,13 +204,14 @@ function onKeydown(e: KeyboardEvent) {
             />
             <div
               v-else
-              class="flex aspect-square items-center justify-center
-                     bg-[repeating-linear-gradient(45deg,#efefe8_0_9px,#f7f7f1_9px_18px)]
-                     dark:bg-[repeating-linear-gradient(45deg,#262931_0_9px,#20232a_9px_18px)]"
+              class="flex aspect-square items-center justify-center bg-[repeating-linear-gradient(45deg,#efefe8_0_9px,#f7f7f1_9px_18px)] dark:bg-[repeating-linear-gradient(45deg,#262931_0_9px,#20232a_9px_18px)]"
             >
               <span class="font-mono text-[10px] text-ink-300 dark:text-chalk-500">[ photo ]</span>
             </div>
-            <div v-if="v.card.caption" class="mt-2 font-display text-2xl leading-none">
+            <div
+              v-if="v.card.caption"
+              class="mt-2 font-display text-2xl leading-none"
+            >
               {{ v.card.caption }}
             </div>
             <div v-if="v.card.note" class="font-hand text-[13px] text-ink-400 dark:text-chalk-500">

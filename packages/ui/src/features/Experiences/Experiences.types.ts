@@ -1,9 +1,16 @@
 export interface NotebookRole {
+    id?: string
     period: string
     title: string
     company: string
     blurb: string
     tags: string[]
+    /** full write-up shown in the expanded note; falls back to blurb */
+    description?: string
+    /** "what I learned" callout shown in the expanded note, when present */
+    learned?: string
+    startDate?: string | null
+    endDate?: string | null
 }
 
 export interface EngineeringNotebookProps {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import type { EngineeringNotebookProps } from './Experiences.types'
+import type { EngineeringNotebookProps, NotebookRole } from './Experiences.types'
+import ExperienceModal from './ExperienceModal.vue'
 import SketchBox from '#components/SketchBox/SketchBox.vue'
 import Typography from '#components/Typography/Typography.vue'
 import UiCard from '#components/UiCard/UiCard.vue'
@@ -97,6 +98,18 @@ const sliderLabel = computed(
     `Roles, showing ${Math.min(visibleCount.value, props.roles.length)} of ${props.roles.length}. ` +
     'Use the arrows to browse.',
 )
+
+// ── expand a note into the morph modal, from wherever it was clicked ──
+const expandedRole = ref<NotebookRole | null>(null)
+const originRect = ref<DOMRect | null>(null)
+
+function openRole(role: NotebookRole, e: Event) {
+  originRect.value = (e.currentTarget as HTMLElement).getBoundingClientRect()
+  expandedRole.value = role
+}
+function closeRole() {
+  expandedRole.value = null
+}
 </script>
 
 <template>
@@ -114,8 +127,7 @@ const sliderLabel = computed(
     <!-- slider when the history outgrows the grid -->
     <div v-if="asSlider">
       <div
-        class="overflow-hidden outline-none focus-visible:outline-2 focus-visible:outline-offset-4
-               focus-visible:outline-current"
+        class="overflow-hidden outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
         tabindex="0"
         role="group"
         aria-roledescription="carousel"
@@ -129,10 +141,29 @@ const sliderLabel = computed(
           <div
             v-for="(role, i) in roles"
             :key="i"
-            class="shrink-0 basis-full px-[13px] md:basis-1/3"
+            class="relative shrink-0 basis-full px-[13px] md:basis-1/3"
             :aria-hidden="i < index || i >= index + visibleCount ? 'true' : undefined"
           >
-            <UiCard variant="index" class="h-full">
+            <SketchBox
+              v-if="role.endDate === null"
+              tag="span"
+              color="#FCE34B"
+              :stroke-width="1.6"
+              class="absolute -top-2 z-10 rotate-3 bg-marker px-2.5 py-1 font-hand text-[12.5px] text-ink shadow-sticky"
+            >
+              I'm now at &#8594;
+            </SketchBox>
+            <UiCard
+              variant="index"
+              class="h-full cursor-pointer"
+              :stroke-color="role.endDate === null ? '#FCE34B' : undefined"
+              role="button"
+              tabindex="0"
+              :aria-label="`read the full note — ${role.title}`"
+              @click="openRole(role, $event)"
+              @keydown.enter="openRole(role, $event)"
+              @keydown.space.prevent="openRole(role, $event)"
+            >
               <div class="mb-1.5 font-mono text-[11.5px] text-cyan">{{ role.period }}</div>
               <div class="font-display text-[30px] leading-[1.05]">{{ role.title }}</div>
               <div class="mb-3 font-hand text-[17px] text-ink-400 dark:text-chalk-500">
@@ -187,17 +218,40 @@ const sliderLabel = computed(
 
     <!-- pinned card grid -->
     <div v-else class="grid gap-[26px] md:grid-cols-3">
-      <UiCard v-for="(role, i) in roles" :key="i" variant="index">
-        <div class="mb-1.5 font-mono text-[11.5px] text-cyan">{{ role.period }}</div>
-        <div class="font-display text-[30px] leading-[1.05]">{{ role.title }}</div>
-        <div class="mb-3 font-hand text-[17px] text-ink-400 dark:text-chalk-500">
-          {{ role.company }}
-        </div>
-        <p class="mb-3 text-[14.5px] text-ink-600 dark:text-chalk-600">{{ role.blurb }}</p>
-        <div class="flex flex-wrap gap-1.5">
-          <UiChip v-for="tag in role.tags" :key="tag">{{ tag }}</UiChip>
-        </div>
-      </UiCard>
+      <div v-for="(role, i) in roles" :key="i" class="relative">
+        <SketchBox
+          v-if="role.endDate === null"
+          tag="span"
+          color="#FCE34B"
+          :stroke-width="1.6"
+          class="absolute -top-2 right-7 z-10 rotate-3 bg-marker px-2.5 py-1 font-hand text-[12.5px] text-ink shadow-sticky"
+        >
+          I'm now at →
+        </SketchBox>
+        <UiCard
+          variant="index"
+          class="cursor-pointer"
+          :stroke-color="role.endDate === null ? '#FCE34B' : undefined"
+          role="button"
+          tabindex="0"
+          :aria-label="`read the full note — ${role.title}`"
+          @click="openRole(role, $event)"
+          @keydown.enter="openRole(role, $event)"
+          @keydown.space.prevent="openRole(role, $event)"
+        >
+          <div class="mb-1.5 font-mono text-[11.5px] text-cyan">{{ role.period }}</div>
+          <div class="font-display text-[30px] leading-[1.05]">{{ role.title }}</div>
+          <div class="mb-3 font-hand text-[17px] text-ink-400 dark:text-chalk-500">
+            {{ role.company }}
+          </div>
+          <p class="mb-3 text-[14.5px] text-ink-600 dark:text-chalk-600">{{ role.blurb }}</p>
+          <div class="flex flex-wrap gap-1.5">
+            <UiChip v-for="tag in role.tags" :key="tag">{{ tag }}</UiChip>
+          </div>
+        </UiCard>
+      </div>
     </div>
+
+    <ExperienceModal :role="expandedRole" :origin-rect="originRect" @close="closeRole" />
   </section>
 </template>

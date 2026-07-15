@@ -10,8 +10,8 @@ import {
   Skills,
   Travels,
 } from '@larevo/ui'
-import type { BookingFormPayload, BookingSlot } from '@larevo/ui'
-import type { ApiOverview } from '~/types'
+import type { BookingFormPayload, BookingSlot, NotebookRole } from '@larevo/ui'
+import type { ApiExperience, ApiOverview } from '~/types'
 
 useHead({
   title: 'Oussama.elamrani — Senior Full-Stack Engineer',
@@ -20,6 +20,33 @@ useHead({
 
 const { user, isAdmin, logout } = useAuth()
 const { data: overview } = await useFetch<ApiOverview | null>('/api/overview')
+const { data: experiences } = await useFetch<ApiExperience[]>('/api/experiences')
+
+// the "Engineering Notebook" card shape (period/title/company/blurb) predates
+// the API — map the DB record into it here rather than reshaping the component
+function formatYear(d: string | null) {
+  return d ? new Date(d).getFullYear().toString() : undefined
+}
+
+function toNotebookRole(e: ApiExperience): NotebookRole {
+  const blurb = e.description ?? ''
+  return {
+    id: e.id,
+    period: `${formatYear(e.startDate) ?? '—'} — ${formatYear(e.endDate) ?? 'now'}`,
+    title: e.title,
+    company: e.roles.join(' · ') || 'Freelance',
+    blurb: blurb.length > 160 ? `${blurb.slice(0, 160).trimEnd()}…` : blurb,
+    tags: e.tags,
+    description: e.description ?? undefined,
+    learned: e.learned ?? undefined,
+    startDate: e.startDate,
+    endDate: e.endDate,
+  }
+}
+
+const notebookRoles = computed<NotebookRole[] | undefined>(() =>
+  experiences.value?.length ? experiences.value.map(toNotebookRole) : undefined,
+)
 
 const bookingTaken = ref<BookingSlot[]>([])
 const bookingSubmitting = ref(false)
@@ -109,7 +136,7 @@ const navLinks = [
     <Skills />
 
     <!-- ============ ENGINEERING NOTEBOOK ============ -->
-    <Experiences />
+    <Experiences :roles="notebookRoles" />
 
     <!-- ============ FEATURE SPOTLIGHT ============ -->
     <CodeExpr />
