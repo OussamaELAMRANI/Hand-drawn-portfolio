@@ -11,6 +11,7 @@ const nav = [
   { label: 'Posts', to: '/admin/posts', dot: '#C0577F', dotDark: '#C0577F' },
   { label: 'Tags', to: '/admin/tags', dot: '#C98A2B', dotDark: '#C98A2B' },
   { label: 'Experiences', to: '/admin/experiences', dot: '#8A6BCF', dotDark: '#8A6BCF' },
+  { label: 'Bookings', to: '/admin/bookings', dot: '#5FA04E', dotDark: '#5FA04E' },
 ]
 
 const isActive = (item: (typeof nav)[number]) =>

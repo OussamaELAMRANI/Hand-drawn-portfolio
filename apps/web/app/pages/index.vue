@@ -10,6 +10,7 @@ import {
   Skills,
   Travels,
 } from '@larevo/ui'
+import type { BookingFormPayload, BookingSlot } from '@larevo/ui'
 import type { ApiOverview } from '~/types'
 
 useHead({
@@ -19,6 +20,34 @@ useHead({
 
 const { user, isAdmin, logout } = useAuth()
 const { data: overview } = await useFetch<ApiOverview | null>('/api/overview')
+
+const bookingTaken = ref<BookingSlot[]>([])
+const bookingSubmitting = ref(false)
+const bookingError = ref<string | null>(null)
+const bookingConfirmed = ref(false)
+
+async function onBookingMonthChange(year: number, month: number) {
+  bookingTaken.value = await $fetch<BookingSlot[]>('/api/bookings', { query: { year, month } })
+}
+
+async function onBookingSubmit(payload: BookingFormPayload) {
+  bookingSubmitting.value = true
+  bookingError.value = null
+  try {
+    await $fetch('/api/bookings', { method: 'POST', body: payload })
+    bookingConfirmed.value = true
+  } catch (e) {
+    bookingError.value =
+      (e as { data?: { statusMessage?: string } }).data?.statusMessage ?? 'Something went wrong — try again'
+  } finally {
+    bookingSubmitting.value = false
+  }
+}
+
+function onBookingReset() {
+  bookingConfirmed.value = false
+  bookingError.value = null
+}
 
 const navLinks = [
   { label: 'Experience', href: '#experience' },
@@ -89,7 +118,15 @@ const navLinks = [
     <Travels />
 
     <!-- ============ BOOK MY TIME ============ -->
-    <CalendarBooking />
+    <CalendarBooking
+      :taken-slots="bookingTaken"
+      :submitting="bookingSubmitting"
+      :error="bookingError"
+      :confirmed="bookingConfirmed"
+      @month-change="onBookingMonthChange"
+      @book="onBookingSubmit"
+      @reset="onBookingReset"
+    />
 
     <!-- ============ FOOTER ============ -->
     <Footer />

@@ -2,11 +2,19 @@
 import { SketchBox } from '@larevo/ui'
 import type { ApiPost, ApiExperience } from '~/types'
 
+interface BookingRow {
+  id: string
+  read: boolean
+}
+
 const { data: postsData } = await useFetch<ApiPost[]>('/api/posts')
 const { data: experiencesData } = await useFetch<ApiExperience[]>('/api/experiences')
 const { data: tagsData } = await useFetch<{ name: string }[]>('/api/tags')
+const { data: bookingsData } = await useFetch<BookingRow[]>('/api/bookings/admin')
 
 const posts = computed(() => postsData.value ?? [])
+const bookings = computed(() => bookingsData.value ?? [])
+const unreadBookings = computed(() => bookings.value.filter((b) => !b.read).length)
 
 const stats = computed(() => [
   {
@@ -37,6 +45,14 @@ const stats = computed(() => [
     to: '/admin/tags',
     tilt: 'rotate-[1.6deg]',
   },
+  {
+    label: 'Bookings',
+    count: bookings.value.length,
+    color: '#5FA04E',
+    to: '/admin/bookings',
+    tilt: 'rotate-[0.9deg]',
+    badge: unreadBookings.value,
+  },
 ])
 
 const recent = computed(() => posts.value.slice(0, 5))
@@ -55,6 +71,14 @@ const statusColor = (status: ApiPost['status']) =>
                  ease-out hover:-translate-y-1 hover:rotate-0 dark:bg-night-800"
           :class="s.tilt"
         >
+          <span
+            v-if="s.badge"
+            class="absolute -right-2.5 -top-2.5 flex h-6 min-w-6 items-center justify-center
+                   rounded-full bg-magenta px-1.5 font-mono text-[11px] font-bold text-white
+                   shadow-sticky"
+          >
+            {{ s.badge }}
+          </span>
           <div
             class="font-display text-5xl font-bold leading-[0.85]"
             :style="{ color: s.color }"

@@ -3,7 +3,7 @@ import { users } from './schema'
 import { createDb } from './index'
 
 const db = createDb(
-  process.env.DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/larevo',
+  process.env.DATABASE_URL!!
 )
 
 const password = process.env.SEED_ADMIN_PASSWORD

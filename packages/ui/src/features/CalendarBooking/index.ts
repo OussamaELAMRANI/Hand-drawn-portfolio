@@ -1,2 +1,2 @@
 export { default as CalendarBooking } from './CalendarBooking.vue'
-export type { BookingSelection, CalendarBookingProps } from './CalendarBooking.types'
+export type { BookingSlot, BookingFormPayload, CalendarBookingProps } from './CalendarBooking.types'

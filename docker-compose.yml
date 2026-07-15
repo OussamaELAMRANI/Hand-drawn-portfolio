@@ -17,5 +17,15 @@ services:
       timeout: 5s
       retries: 10
 
+  # catches all mail sent in dev instead of delivering it — web UI to inspect
+  # what got "sent" at http://localhost:1080
+  mailcatcher:
+    image: schickling/mailcatcher
+    container_name: larevo-mailcatcher
+    restart: unless-stopped
+    ports:
+      - '${MAILCATCHER_SMTP_PORT:-1025}:1025'
+      - '${MAILCATCHER_WEB_PORT:-1080}:1080'
+
 volumes:
   pgdata:

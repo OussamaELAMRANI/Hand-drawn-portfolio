@@ -15,6 +15,7 @@
   "dependencies": {
     "@larevo/db": "workspace:^",
     "@larevo/ui": "workspace:^",
+    "nodemailer": "^9.0.3",
     "nuxt": "^4.4.8",
     "vue": "^3.5.39",
     "vue-router": "^5.1.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@larevo/config": "workspace:^",
-    "@nuxt/eslint": "^1.16.0"
+    "@nuxt/eslint": "^1.16.0",
+    "@types/nodemailer": "^8.0.1"
   }
 }

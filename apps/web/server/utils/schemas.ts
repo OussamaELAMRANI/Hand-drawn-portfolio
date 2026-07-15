@@ -58,6 +58,14 @@ export const overviewInput = z.object({
   cards: z.array(overviewCard).max(12).default([]),
 })
 
+export const bookingInput = z.object({
+  name: z.string().trim().min(1).max(100),
+  email: z.email(),
+  message: z.string().trim().max(1000).nullish(),
+  date: isoDate,
+  slot: z.string().trim().min(1).max(20),
+})
+
 export const loginInput = z.object({
   email: z.email().transform((v) => v.toLowerCase()),
   password: z.string().min(1),
