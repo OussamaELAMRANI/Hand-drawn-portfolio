@@ -29,6 +29,13 @@
       "when": 1784082746908,
       "tag": "0003_gigantic_wolverine",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784135251131,
+      "tag": "0004_experience_description_richtext",
+      "breakpoints": true
     }
   ]
 }

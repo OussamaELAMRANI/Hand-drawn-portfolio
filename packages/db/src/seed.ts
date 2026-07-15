@@ -2,9 +2,13 @@ import { hashPassword } from './password'
 import { experience, experienceTags, tags, users } from './schema'
 import { createDb, sql } from './index'
 
-const db = createDb(
-  process.env.DATABASE_URL!!
-)
+const db = createDb(process.env.DATABASE_URL!!)
+
+// wraps plain seed copy into the single-paragraph TipTap doc `experience.description` now stores
+const doc = (text: string) => ({
+  type: 'doc',
+  content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+})
 
 const password = process.env.SEED_ADMIN_PASSWORD
 if (!password) {
@@ -30,10 +34,11 @@ const dummyExperiences = [
   {
     title: 'Senior Full-Stack Engineer',
     roles: ['Freelance', 'Remote'],
-    description:
+    description: doc(
       'Architecting TypeScript/Node services and Next.js + Nuxt frontends for product teams. ' +
-      'Own the boundary between design system and app code, push for DDD-flavored modules and ' +
-      'high test coverage on anything that touches money or auth.',
+        'Own the boundary between design system and app code, push for DDD-flavored modules and ' +
+        'high test coverage on anything that touches money or auth.',
+    ),
     learned:
       'That a well-drawn module boundary saves more time in review than any lint rule — once ' +
       'the domain layer stopped importing framework code, onboarding new contractors got a lot faster.',
@@ -44,10 +49,11 @@ const dummyExperiences = [
   {
     title: 'Full-Stack Developer',
     roles: ['Digital Agency', 'On-site'],
-    description:
+    description: doc(
       'Built and scaled Symfony + Vue apps on Postgres & Redis for a dozen client products. ' +
-      'Owned CI pipelines, caching layers and API design, and mentored two junior devs through ' +
-      'their first production incidents.',
+        'Owned CI pipelines, caching layers and API design, and mentored two junior devs through ' +
+        'their first production incidents.',
+    ),
     learned:
       'Cache invalidation is a people problem before it is a code problem — most of the stale-data ' +
       'bugs traced back to two teams disagreeing on what a cache key should represent.',
@@ -58,10 +64,11 @@ const dummyExperiences = [
   {
     title: 'Web Developer',
     roles: ['Product Startup'],
-    description:
+    description: doc(
       'Shipped Laravel/MySQL backends and my first React frontends for an early-stage SaaS. ' +
-      'Learned to move fast without breaking the important things, under a founder who reviewed ' +
-      'every PR personally.',
+        'Learned to move fast without breaking the important things, under a founder who reviewed ' +
+        'every PR personally.',
+    ),
     learned:
       'Ship the boring version first. The feature that took two days to "do right" almost always ' +
       'got redesigned within a month anyway once real users touched it.',
@@ -72,9 +79,10 @@ const dummyExperiences = [
   {
     title: 'Backend Engineer — Payments',
     roles: ['Contract'],
-    description:
+    description: doc(
       'Rebuilt a checkout service migrating from a monolith to isolated Node workers behind a ' +
-      'message queue, with idempotency keys and reconciliation jobs to keep ledgers honest.',
+        'message queue, with idempotency keys and reconciliation jobs to keep ledgers honest.',
+    ),
     learned:
       'Idempotency is not a nice-to-have on payment endpoints — it is the difference between a ' +
       'retried request and a customer charged twice.',
@@ -85,9 +93,10 @@ const dummyExperiences = [
   {
     title: 'Junior Developer',
     roles: ['First job', 'On-site'],
-    description:
+    description: doc(
       'Started out fixing bugs in a legacy PHP admin panel, then graduated to small features. ' +
-      'Learned Git, code review etiquette, and how to read a stack trace without panicking.',
+        'Learned Git, code review etiquette, and how to read a stack trace without panicking.',
+    ),
     learned:
       'Asking "why" about an existing pattern before changing it saved me from breaking things I ' +
       "didn't know were load-bearing more than once.",
@@ -97,9 +106,7 @@ const dummyExperiences = [
   },
 ]
 
-const [experienceCountRow] = await db
-  .select({ count: sql<number>`count(*)::int` })
-  .from(experience)
+const [experienceCountRow] = await db.select({ count: sql<number>`count(*)::int` }).from(experience)
 const experienceCount = experienceCountRow?.count ?? 0
 
 if (experienceCount > 0) {
@@ -117,7 +124,9 @@ if (experienceCount > 0) {
         return tag!.id
       }),
     )
-    await db.insert(experienceTags).values(tagIds.map((tagId) => ({ experienceId: row!.id, tagId })))
+    await db
+      .insert(experienceTags)
+      .values(tagIds.map((tagId) => ({ experienceId: row!.id, tagId })))
   }
   console.log(`seeded ${dummyExperiences.length} experiences`)
 }

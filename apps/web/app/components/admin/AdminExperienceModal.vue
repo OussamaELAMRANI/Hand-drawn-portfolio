@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { UiButton, UiInput, UiTagInput, UiTextarea } from '@larevo/ui'
+import { UiButton, UiEditor, UiInput, UiTagInput, UiTextarea } from '@larevo/ui'
+import type { JSONContent } from '@larevo/ui'
 import type { ApiExperience } from '~/types'
 
 const props = defineProps<{ experience: ApiExperience | null }>()
@@ -7,7 +8,7 @@ const emit = defineEmits<{ close: []; saved: [] }>()
 
 const title = ref(props.experience?.title ?? '')
 const rolesText = ref(props.experience?.roles.join(', ') ?? '')
-const description = ref(props.experience?.description ?? '')
+const description = ref<JSONContent | null>(props.experience?.description ?? null)
 const tags = ref<string[]>(props.experience?.tags ?? [])
 const learned = ref(props.experience?.learned ?? '')
 const startDate = ref(props.experience?.startDate ?? '')
@@ -50,7 +51,7 @@ async function save() {
   const payload = {
     title: title.value.trim(),
     roles: splitList(rolesText.value),
-    description: description.value.trim() || null,
+    description: richTextToPlain(description.value) ? description.value : null,
     tags: tags.value,
     learned: learned.value.trim() || null,
     startDate: startDate.value || null,
@@ -114,7 +115,7 @@ async function save() {
           <span class="mb-1 block font-hand text-[15px] text-ink-600 dark:text-chalk-600">
             Description
           </span>
-          <UiTextarea v-model="description" :rows="3" placeholder="What the experience covers." />
+          <UiEditor v-model="description" placeholder="What the experience covers." />
         </label>
 
         <label>

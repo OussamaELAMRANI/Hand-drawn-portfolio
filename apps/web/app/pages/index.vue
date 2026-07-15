@@ -29,7 +29,7 @@ function formatYear(d: string | null) {
 }
 
 function toNotebookRole(e: ApiExperience): NotebookRole {
-  const blurb = e.description ?? ''
+  const blurb = richTextToPlain(e.description)
   return {
     id: e.id,
     period: `${formatYear(e.startDate) ?? '—'} — ${formatYear(e.endDate) ?? 'now'}`,

@@ -27,7 +27,7 @@ export const postPatch = postBase.partial()
 const experienceBase = z.object({
   title: z.string().trim().min(1),
   roles: z.array(z.string().trim().min(1)).max(10),
-  description: z.string().trim().nullish(),
+  description: richDoc.nullish(),
   tags: z.array(z.string().trim().min(1)).max(20),
   learned: z.string().trim().nullish(),
   startDate: isoDate.nullish(),

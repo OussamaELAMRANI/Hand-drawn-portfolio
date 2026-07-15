@@ -1,4 +1,4 @@
-import { date, pgTable, primaryKey, text, uuid, varchar } from 'drizzle-orm/pg-core'
+import { date, jsonb, pgTable, primaryKey, text, uuid, varchar } from 'drizzle-orm/pg-core'
 import { timestampable } from './timestamp'
 import { tags } from './tag'
 
@@ -6,7 +6,8 @@ export const experience = pgTable('experiences', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: varchar('title').notNull(),
   roles: text('roles').array().notNull().default([]),
-  description: text('description'),
+  // rich-text document (TipTap JSON), not plain text
+  description: jsonb('description'),
   learned: text('learned'),
   startDate: date('start_date'),
   endDate: date('end_date'),

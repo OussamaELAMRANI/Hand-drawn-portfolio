@@ -19,7 +19,7 @@ export interface ApiExperience {
   id: string
   title: string
   roles: string[]
-  description: string | null
+  description: JSONContent | null
   tags: string[]
   learned: string | null
   startDate: string | null

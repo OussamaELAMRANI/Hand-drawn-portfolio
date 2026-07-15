@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import type { NotebookRole } from './Experiences.types'
+import RichDoc from '#components/RichDoc/RichDoc.vue'
 import SketchBox from '#components/SketchBox/SketchBox.vue'
 import Typography from '#components/Typography/Typography.vue'
 import UiCard from '#components/UiCard/UiCard.vue'
@@ -135,9 +136,17 @@ const formatDate = (d: string | null | undefined) =>
                 {{ role.company }}
               </div>
 
-              <p class="mb-5 whitespace-pre-line text-[15.5px] leading-relaxed text-ink-600
-                        dark:text-chalk-600">
-                {{ role.description || role.blurb }}
+              <RichDoc
+                v-if="role.description"
+                :doc="role.description"
+                paragraph-class="mb-5 text-[15.5px] leading-relaxed text-ink-600 dark:text-chalk-600"
+              />
+              <p
+                v-else
+                class="mb-5 whitespace-pre-line text-[15.5px] leading-relaxed text-ink-600
+                       dark:text-chalk-600"
+              >
+                {{ role.blurb }}
               </p>
 
               <UiCard v-if="role.learned" variant="callout" class="mb-5 !rotate-0">

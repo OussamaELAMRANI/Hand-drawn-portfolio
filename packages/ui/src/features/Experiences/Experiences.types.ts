@@ -1,3 +1,5 @@
+import type { JSONContent } from '../../components/UiEditor/UiEditor.types'
+
 export interface NotebookRole {
     id?: string
     period: string
@@ -5,8 +7,8 @@ export interface NotebookRole {
     company: string
     blurb: string
     tags: string[]
-    /** full write-up shown in the expanded note; falls back to blurb */
-    description?: string
+    /** full write-up (TipTap JSON) shown in the expanded note; falls back to blurb */
+    description?: JSONContent
     /** "what I learned" callout shown in the expanded note, when present */
     learned?: string
     startDate?: string | null
