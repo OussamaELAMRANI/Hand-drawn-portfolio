@@ -49,6 +49,16 @@ export default defineNuxtConfig({
     bookingTimezone: 'Africa/Casablanca',
     // server-only; overridden by NUXT_BOOKING_SLOT_MINUTES
     bookingSlotMinutes: 30,
+    // server-only; overridden by NUXT_TURNSTILE_SECRET_KEY — verifies the
+    // booking form's CAPTCHA token; verification no-ops (passes) without it,
+    // matching this app's dev-convenience pattern for other optional integrations
+    turnstileSecretKey: '',
+    public: {
+      // client-exposed by design (Turnstile site keys are meant to be public);
+      // overridden by NUXT_PUBLIC_TURNSTILE_SITE_KEY — the CAPTCHA widget
+      // doesn't render without it
+      turnstileSiteKey: '',
+    },
   },
   css: ['@larevo/config/fonts.css', '~/assets/css/main.css'],
   vite: {

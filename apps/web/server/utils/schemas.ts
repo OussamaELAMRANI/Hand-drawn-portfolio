@@ -64,6 +64,8 @@ export const bookingInput = z.object({
   message: z.string().trim().max(1000).nullish(),
   date: isoDate,
   slot: z.string().trim().min(1).max(20),
+  // Cloudflare Turnstile token — verified server-side, never persisted
+  captchaToken: z.string().max(2000).default(''),
 })
 
 export const loginInput = z.object({

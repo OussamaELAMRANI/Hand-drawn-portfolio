@@ -20,6 +20,7 @@ useHead({
 })
 
 const { user, isAdmin, logout } = useAuth()
+const { public: publicConfig } = useRuntimeConfig()
 const { data: overview } = await useFetch<ApiOverview | null>('/api/overview')
 const { data: experiences } = await useFetch<ApiExperience[]>('/api/experiences')
 
@@ -148,6 +149,7 @@ const navLinks = [
       :submitting="bookingSubmitting"
       :error="bookingError"
       :confirmed="bookingConfirmed"
+      :captcha-site-key="publicConfig.turnstileSiteKey"
       @month-change="onBookingMonthChange"
       @book="onBookingSubmit"
       @reset="onBookingReset"

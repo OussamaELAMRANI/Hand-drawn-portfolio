@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { BookingFormPayload, CalendarBookingProps } from './CalendarBooking.types'
 import SketchBox from '#components/SketchBox/SketchBox.vue'
 import Typography from '#components/Typography/Typography.vue'
@@ -7,6 +7,41 @@ import UiArrow from '#components/UiArrow/UiArrow.vue'
 import UiButton from '#components/UiButton/UiButton.vue'
 import UiInput from '#components/UiInput/UiInput.vue'
 import UiTextarea from '#components/UiTextarea/UiTextarea.vue'
+
+interface TurnstileApi {
+  render: (
+    el: HTMLElement,
+    opts: {
+      sitekey: string
+      callback: (token: string) => void
+      'error-callback'?: () => void
+      'expired-callback'?: () => void
+    },
+  ) => string
+  reset: (widgetId?: string) => void
+  remove: (widgetId?: string) => void
+}
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi
+  }
+}
+
+const TURNSTILE_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
+
+function loadTurnstileScript(): Promise<void> {
+  if (window.turnstile) return Promise.resolve()
+  const existing = document.querySelector<HTMLScriptElement>(`script[src="${TURNSTILE_SRC}"]`)
+  if (existing) return new Promise((resolve) => existing.addEventListener('load', () => resolve(), { once: true }))
+  return new Promise((resolve) => {
+    const script = document.createElement('script')
+    script.src = TURNSTILE_SRC
+    script.async = true
+    script.defer = true
+    script.addEventListener('load', () => resolve(), { once: true })
+    document.head.appendChild(script)
+  })
+}
 
 const props = withDefaults(defineProps<CalendarBookingProps>(), {
   title: 'Book my time',
@@ -140,6 +175,43 @@ const formName = ref('')
 const formEmail = ref('')
 const formMessage = ref('')
 
+// Cloudflare Turnstile — no-ops (widget never renders, canSubmit ignores it)
+// when captchaSiteKey isn't configured
+const captchaEl = ref<HTMLElement | null>(null)
+const captchaToken = ref('')
+const captchaWidgetId = ref<string | undefined>()
+
+function renderCaptcha() {
+  if (!captchaEl.value || !window.turnstile || !props.captchaSiteKey) return
+  captchaWidgetId.value = window.turnstile.render(captchaEl.value, {
+    sitekey: props.captchaSiteKey,
+    callback: (token) => (captchaToken.value = token),
+    'error-callback': () => (captchaToken.value = ''),
+    'expired-callback': () => (captchaToken.value = ''),
+  })
+}
+
+function resetCaptcha() {
+  captchaToken.value = ''
+  if (window.turnstile && captchaWidgetId.value) window.turnstile.reset(captchaWidgetId.value)
+}
+
+onMounted(async () => {
+  if (!props.captchaSiteKey) return
+  await loadTurnstileScript()
+  renderCaptcha()
+})
+onUnmounted(() => {
+  if (window.turnstile && captchaWidgetId.value) window.turnstile.remove(captchaWidgetId.value)
+})
+
+// a failed submission may have consumed or expired the token — Turnstile
+// tokens are single-use, so the widget needs a fresh challenge to retry
+watch(
+  () => props.error,
+  (error) => error && resetCaptcha(),
+)
+
 const emailLooksValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail.value.trim()))
 const canSubmit = computed(
   () =>
@@ -147,7 +219,8 @@ const canSubmit = computed(
     formName.value.trim().length > 0 &&
     emailLooksValid.value &&
     !!selectedSlotLabel.value &&
-    !takenForSelectedDay.value.has(selectedSlotLabel.value),
+    !takenForSelectedDay.value.has(selectedSlotLabel.value) &&
+    (!props.captchaSiteKey || !!captchaToken.value),
 )
 
 function submit() {
@@ -158,6 +231,7 @@ function submit() {
     name: formName.value.trim(),
     email: formEmail.value.trim(),
     message: formMessage.value.trim() || undefined,
+    captchaToken: captchaToken.value,
   })
 }
 
@@ -165,6 +239,7 @@ function bookAnother() {
   formName.value = ''
   formEmail.value = ''
   formMessage.value = ''
+  resetCaptcha()
   emit('reset')
 }
 </script>
@@ -306,6 +381,7 @@ function bookAnother() {
             <UiInput v-model="formName" placeholder="Your name" />
             <UiInput v-model="formEmail" type="email" placeholder="you@company.com" />
             <UiTextarea v-model="formMessage" :rows="2" placeholder="What are we dealing with ?" />
+            <div v-if="captchaSiteKey" ref="captchaEl" class="flex justify-center" />
             <p v-if="error" class="font-hand text-[15px] text-magenta">{{ error }}</p>
             <UiButton :disabled="!canSubmit" @click="submit">
               {{ submitting ? 'booking…' : 'Confirm booking' }}

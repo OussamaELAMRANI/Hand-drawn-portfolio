@@ -11,6 +11,8 @@ export interface BookingFormPayload {
   name: string
   email: string
   message?: string
+  /** Cloudflare Turnstile token — empty when the widget isn't configured */
+  captchaToken: string
 }
 
 export interface CalendarBookingProps {
@@ -30,4 +32,6 @@ export interface CalendarBookingProps {
   error?: string | null
   /** true once the current booking has been confirmed */
   confirmed?: boolean
+  /** Cloudflare Turnstile site key; the CAPTCHA widget doesn't render without it */
+  captchaSiteKey?: string
 }

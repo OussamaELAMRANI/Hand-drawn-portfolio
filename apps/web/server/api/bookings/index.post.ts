@@ -2,8 +2,13 @@ import { and, bookings, eq, googleConnections } from '@larevo/db'
 
 // public: anyone can book a slot — this is the "hire me" contact flow, no auth
 export default defineEventHandler(async (event) => {
-  const input = await readValidatedBody(event, bookingInput.parse)
+  const { captchaToken, ...input } = await readValidatedBody(event, bookingInput.parse)
   const db = useDb()
+
+  const captchaOk = await verifyCaptcha(captchaToken, getRequestIP(event, { xForwardedFor: true }))
+  if (!captchaOk) {
+    throw createError({ statusCode: 400, statusMessage: 'CAPTCHA verification failed — try again' })
+  }
 
   const today = new Date().toISOString().slice(0, 10)
   if (input.date < today) {
