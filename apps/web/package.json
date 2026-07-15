@@ -5,6 +5,7 @@
   "prettier": "@larevo/config/prettier",
   "scripts": {
     "build": "nuxt build",
+    "vercel-build": "pnpm --filter @larevo/db db:push && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
