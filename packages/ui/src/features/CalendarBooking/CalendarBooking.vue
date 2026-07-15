@@ -12,7 +12,14 @@ const props = withDefaults(defineProps<CalendarBookingProps>(), {
   title: 'Book my time',
   subtitle: '— recruiters & clients: grab a 30-min intro. Pick a day, pick a slot, done.',
   meta: 'GMT+1 · 30 min',
-  slots: () => ['09:30', '11:00', '13:00', '14:30', '16:00'],
+  // a full working day, 9am – 7pm, in 30-min increments (last start 18:30 so
+  // the intro ends by 7pm)
+  slots: () => [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+    '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
+    '18:00', '18:30',
+  ],
   annotation: 'pick a free day!',
   takenSlots: () => [],
   submitting: false,
@@ -57,7 +64,7 @@ function firstBookableDay(y: number, m: number): number {
   const startDay = isCurrentMonth ? today.getDate() : 1
   const daysIn = new Date(y, m + 1, 0).getDate()
   for (let d = startDay; d <= daysIn; d++) {
-    if (![0, 6].includes(new Date(y, m, d).getDay())) return d
+    if (new Date(y, m, d).getDay() !== 0) return d
   }
   return startDay
 }
@@ -87,7 +94,7 @@ watch([viewYear, viewMonth], ([y, m]) => emit('month-change', y, m + 1), { immed
 
 interface CalendarCell {
   day: number | null
-  weekend: boolean
+  closed: boolean
   past: boolean
 }
 
@@ -97,12 +104,12 @@ const calendarWeeks = computed<CalendarCell[][]>(() => {
   const firstDow = new Date(y, m, 1).getDay()
   const daysIn = new Date(y, m + 1, 0).getDate()
   const cells: CalendarCell[] = []
-  for (let i = 0; i < firstDow; i++) cells.push({ day: null, weekend: false, past: false })
+  for (let i = 0; i < firstDow; i++) cells.push({ day: null, closed: false, past: false })
   for (let d = 1; d <= daysIn; d++) {
     const dow = new Date(y, m, d).getDay()
-    cells.push({ day: d, weekend: dow === 0 || dow === 6, past: new Date(y, m, d) < today })
+    cells.push({ day: d, closed: dow === 0, past: new Date(y, m, d) < today })
   }
-  while (cells.length % 7 !== 0) cells.push({ day: null, weekend: false, past: false })
+  while (cells.length % 7 !== 0) cells.push({ day: null, closed: false, past: false })
   const weeks: CalendarCell[][] = []
   for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7))
   return weeks
@@ -114,6 +121,10 @@ const selectedDateIso = computed(
 
 const takenForSelectedDay = computed(
   () => new Set(props.takenSlots.filter((t) => t.date === selectedDateIso.value).map((t) => t.slot)),
+)
+
+const availableSlotCount = computed(
+  () => props.slots.filter((s) => !takenForSelectedDay.value.has(s)).length,
 )
 
 const selectedSlotLabel = computed(() => props.slots[selectedSlot.value])
@@ -223,20 +234,20 @@ function bookAnother() {
               v-for="(cell, ci) in week"
               :key="ci"
               type="button"
-              :disabled="cell.day === null || cell.weekend || cell.past"
+              :disabled="cell.day === null || cell.closed || cell.past"
               class="flex aspect-square items-center justify-center border-none font-hand text-base transition-[background,transform] duration-150 [border-radius:50%_48%_52%_50%/50%_52%_48%_50%]"
               :class="[
-                cell.weekend || cell.past
+                cell.closed || cell.past
                   ? 'cursor-not-allowed text-ink-200 dark:text-night-500'
                   : cell.day !== null && 'cursor-pointer',
                 cell.day !== null && cell.day === selectedDay
                   ? 'scale-[1.06] -rotate-3 bg-sky font-bold text-[#2A2A2A]'
                   : 'bg-transparent',
-                cell.day !== null && cell.day !== selectedDay && !cell.weekend && !cell.past
+                cell.day !== null && cell.day !== selectedDay && !cell.closed && !cell.past
                   ? 'hover:bg-paper-300 dark:hover:bg-night-700'
                   : '',
               ]"
-              @click="cell.day !== null && !cell.weekend && !cell.past && (selectedDay = cell.day)"
+              @click="cell.day !== null && !cell.closed && !cell.past && (selectedDay = cell.day)"
             >
               {{ cell.day ?? '' }}
             </button>
@@ -255,14 +266,24 @@ function bookAnother() {
           >
             {{ annotation }}
           </div>
-          <div class="mb-3 font-display text-[28px]">Available slots</div>
-          <div class="flex flex-col gap-2.5">
+          <div class="mb-3 flex items-baseline justify-between">
+            <div class="font-display text-[28px]">Available slots</div>
+            <div class="font-mono text-[11px] text-ink-400 dark:text-chalk-500">
+              {{ availableSlotCount }} available
+            </div>
+          </div>
+          <div
+            class="grid max-h-[280px] grid-cols-2 gap-2 overflow-y-auto rounded-lg border-[1.5px]
+                   border-dashed border-ink-100 p-2.5 sm:grid-cols-3 dark:border-night-500"
+          >
             <button
               v-for="(slot, i) in slots"
               :key="slot"
               type="button"
               :disabled="takenForSelectedDay.has(slot)"
-              class="cursor-pointer rounded-lg border-[1.5px] px-4 py-[11px] text-left font-hand text-base transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-40"
+              class="cursor-pointer rounded-lg border-[1.5px] px-2 py-2 text-center font-hand
+                     text-base leading-none transition-all duration-150
+                     disabled:cursor-not-allowed disabled:opacity-40"
               :class="
                 i === selectedSlot
                   ? '-rotate-1 border-ink bg-marker font-bold text-[#2A2A2A]'
@@ -272,7 +293,8 @@ function bookAnother() {
               @click="selectedSlot = i"
             >
               {{ slot }}
-              {{ takenForSelectedDay.has(slot) ? ' (booked)' : i === selectedSlot ? '  ✓' : '' }}
+              <span v-if="takenForSelectedDay.has(slot)" class="block text-[11px]">booked</span>
+              <span v-else-if="i === selectedSlot">  ✓</span>
             </button>
           </div>
 

@@ -7,6 +7,7 @@ import {
   Experiences,
   Footer,
   HeroMe,
+  ReadingProgress,
   Skills,
   Travels,
 } from '@larevo/ui'
@@ -118,6 +119,7 @@ const navLinks = [
         </NuxtLink>
       </template>
     </UiNavbar>
+    <ReadingProgress />
 
     <div id="top" />
 

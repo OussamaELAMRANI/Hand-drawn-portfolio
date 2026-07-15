@@ -6,8 +6,8 @@ import Typography from '#components/Typography/Typography.vue'
 
 withDefaults(defineProps<FooterProps>(), {
   socials: () => [
-    { label: 'GitHub', href: '#' },
-    { label: 'LinkedIn', href: '#' },
+    { label: 'GitHub', href: 'https://github.com/OussamaELAMRANI/' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/oussama-elamrani/' },
     { label: 'Twitter / X', href: '#' },
   ],
   copyright: '© 2026 Oussama EL AMRANI — hand-drawn, hand-shipped.',
@@ -22,6 +22,8 @@ withDefaults(defineProps<FooterProps>(), {
           v-for="s in socials"
           :key="s.label"
           :href="s.href"
+          target="_blank"
+          rel="noopener noreferrer"
           class="no-underline transition-transform duration-150 ease-out hover:-translate-y-0.5
                  hover:-rotate-2"
         >

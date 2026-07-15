@@ -2,6 +2,7 @@
 import { NuxtLink } from '#components'
 import {
   Footer,
+  ReadingProgress,
   RichDoc,
   SketchBox,
   Skills,
@@ -97,6 +98,7 @@ const navLinks = [
         </NuxtLink>
       </template>
     </UiNavbar>
+    <ReadingProgress />
 
     <!-- ============ HEADER ============ -->
     <header class="mx-auto max-w-[1120px] px-6 pb-5 pt-14">
