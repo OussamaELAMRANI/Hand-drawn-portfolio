@@ -19,9 +19,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'CAPTCHA verification failed — try again' })
   }
 
-  const today = new Date().toISOString().slice(0, 10)
-  if (input.date < today) {
-    throw createError({ statusCode: 400, statusMessage: 'That date has already passed' })
+  const { bookingTimezone } = useRuntimeConfig()
+  const slotStartMs = new Date(zonedTimeToUtcIso(input.date, input.slot, bookingTimezone)).getTime()
+  if (slotStartMs < Date.now()) {
+    throw createError({ statusCode: 400, statusMessage: 'That slot has already passed' })
   }
 
   const taken = await db.query.bookings.findFirst({
@@ -60,11 +61,9 @@ export default defineEventHandler(async (event) => {
   })
   if (primary) {
     try {
-      const { bookingTimezone, bookingSlotMinutes } = useRuntimeConfig()
-      const startIso = zonedTimeToUtcIso(input.date, input.slot, bookingTimezone)
-      const endIso = new Date(
-        new Date(startIso).getTime() + bookingSlotMinutes * 60_000,
-      ).toISOString()
+      const { bookingSlotMinutes } = useRuntimeConfig()
+      const startIso = new Date(slotStartMs).toISOString()
+      const endIso = new Date(slotStartMs + bookingSlotMinutes * 60_000).toISOString()
       const { eventId } = await createCalendarEvent(primary, {
         summary: `Meeting with ${input.name}`,
         description: input.message ?? undefined,

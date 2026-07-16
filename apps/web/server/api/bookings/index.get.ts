@@ -26,9 +26,26 @@ export default defineEventHandler(async (event) => {
   const taken = new Set(bookedRows.map((r) => `${r.date}|${r.slot}`))
   const result = [...bookedRows]
 
+  const { bookingTimezone, bookingSlotMinutes } = useRuntimeConfig()
+  const nowMs = Date.now()
+
+  // slots whose start time has already passed are never bookable, regardless
+  // of Google Calendar state — gray these out same as a real booking
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = `${year}-${pad(month)}-${pad(d)}`
+    for (const slot of DEFAULT_SLOTS) {
+      const key = `${date}|${slot}`
+      if (taken.has(key)) continue
+      const slotStart = new Date(zonedTimeToUtcIso(date, slot, bookingTimezone)).getTime()
+      if (slotStart < nowMs) {
+        taken.add(key)
+        result.push({ date, slot })
+      }
+    }
+  }
+
   const connections = await useDb().query.googleConnections.findMany()
   if (connections.length > 0) {
-    const { bookingTimezone, bookingSlotMinutes } = useRuntimeConfig()
     const timeMin = zonedTimeToUtcIso(start, '00:00', bookingTimezone)
     const timeMax = zonedTimeToUtcIso(end, '23:59', bookingTimezone)
     const busyByConnection = await Promise.all(connections.map((c) => queryFreeBusy(c, timeMin, timeMax)))
