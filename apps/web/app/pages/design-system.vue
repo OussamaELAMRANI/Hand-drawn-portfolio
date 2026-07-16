@@ -19,10 +19,21 @@ import {
 } from '@larevo/ui'
 import type { BadgeVariant, TypographyVariant } from '@larevo/ui'
 
-useHead({
-  title: 'Design System — Oussama.el',
-  htmlAttrs: { class: 'scroll-smooth' },
+useHead({ htmlAttrs: { class: 'scroll-smooth' } })
+
+const pageTitle = 'Design System — Oussama EL AMRANI'
+const pageDescription =
+  'A hand-drawn, notebook-style design system: the components, tokens and patterns used across this portfolio.'
+
+useSeoMeta({
+  title: pageTitle,
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
 })
+defineOgImageComponent('Default', { title: pageTitle, description: pageDescription })
 
 const { user, isAdmin, logout } = useAuth()
 

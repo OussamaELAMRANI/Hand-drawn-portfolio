@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { SketchBox, UiButton, UiInput, useTurnstile } from '@larevo/ui'
 
+// utility page, no search value — crawlable but excluded from the index
+useSeoMeta({ title: 'Sign in — Oussama EL AMRANI', robots: 'noindex, nofollow' })
+
 const { login } = useAuth()
 const { public: publicConfig } = useRuntimeConfig()
 

@@ -16,10 +16,22 @@ import {
 } from '@larevo/ui'
 import type { ApiExperience } from '~/types'
 
-useHead({
-  title: 'Experience — Oussama.el',
-  htmlAttrs: { class: 'scroll-smooth' },
+useHead({ htmlAttrs: { class: 'scroll-smooth' } })
+
+const pageTitle = 'Experience — Oussama EL AMRANI'
+const pageDescription =
+  'Work history and engineering experience of Oussama EL AMRANI, Senior Full-Stack Engineer — ' +
+  'TypeScript, Node.js, Nuxt & Vue.'
+
+useSeoMeta({
+  title: pageTitle,
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
 })
+defineOgImageComponent('Default', { title: pageTitle, description: pageDescription })
 
 const { user, isAdmin, logout } = useAuth()
 const { data: experiences } = await useFetch<ApiExperience[]>('/api/experiences')

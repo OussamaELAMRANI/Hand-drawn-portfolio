@@ -14,15 +14,35 @@ import {
 import type { BookingFormPayload, BookingSlot, NotebookRole } from '@larevo/ui'
 import type { ApiExperience, ApiOverview } from '~/types'
 
-useHead({
-  title: 'Oussama.elamrani — Senior Full-Stack Engineer',
-  htmlAttrs: { class: 'scroll-smooth' },
-})
+useHead({ htmlAttrs: { class: 'scroll-smooth' } })
 
 const { user, isAdmin, logout } = useAuth()
 const { public: publicConfig } = useRuntimeConfig()
 const { data: overview } = await useFetch<ApiOverview | null>('/api/overview')
 const { data: experiences } = await useFetch<ApiExperience[]>('/api/experiences')
+
+const pageTitle = 'Oussama EL AMRANI — Senior Full-Stack Engineer'
+// mirrors HeroMe.vue's defaultBio and nuxt.config's site.description — used
+// until an admin saves real overview copy
+const FALLBACK_DESCRIPTION =
+  'Senior Full-Stack Engineer. I ship end-to-end with TypeScript / Node.js on the back, ' +
+  'Next.js, Nuxt & Vue on the front, and lean on DDD, Postgres and clean test suites to keep it honest.'
+const pageDescription = computed(() => {
+  const plain = richTextToPlain(overview.value?.bio)
+  if (!plain) return FALLBACK_DESCRIPTION
+  if (plain.length <= 155) return plain
+  return `${plain.slice(0, 155).replace(/\s+\S*$/, '').trimEnd()}…`
+})
+
+useSeoMeta({
+  title: pageTitle,
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogType: 'profile',
+  twitterCard: 'summary_large_image',
+})
+defineOgImageComponent('Default', { title: pageTitle, description: pageDescription })
 
 // the "Engineering Notebook" card shape (period/title/company/blurb) predates
 // the API — map the DB record into it here rather than reshaping the component

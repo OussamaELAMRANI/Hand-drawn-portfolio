@@ -1,5 +1,21 @@
 <script setup lang="ts">
 import { DarkModeToggle } from '@larevo/ui'
+
+// sitewide identity — the Footer's default X/Twitter link is a placeholder
+// (`href: '#'`), not a real URL, so it's excluded here rather than emitting
+// invalid sameAs data
+useSchemaOrg([
+  definePerson({
+    name: 'Oussama EL AMRANI',
+    jobTitle: 'Senior Full-Stack Engineer',
+    url: 'https://oussama.work',
+    sameAs: [
+      'https://github.com/OussamaELAMRANI/',
+      'https://www.linkedin.com/in/oussama-elamrani/',
+    ],
+  }),
+  defineWebSite({ name: 'Oussama EL AMRANI — Portfolio' }),
+])
 </script>
 <template>
   <div

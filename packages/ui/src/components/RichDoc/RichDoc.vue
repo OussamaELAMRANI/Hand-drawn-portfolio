@@ -19,7 +19,19 @@ const MARK_TAGS: Record<string, string> = {
 }
 
 function wrapMark(mark: Mark, children: Child[]): Child[] {
-  if (mark.type === 'link') return [h('a', { href: String(mark.attrs?.href ?? '') }, children)]
+  if (mark.type === 'link') {
+    return [
+      h(
+        'a',
+        {
+          href: String(mark.attrs?.href ?? ''),
+          target: mark.attrs?.target || undefined,
+          rel: mark.attrs?.rel || undefined,
+        },
+        children,
+      ),
+    ]
+  }
   if (mark.type === 'highlight') {
     return [
       h('mark', { class: 'inline-block -rotate-1 bg-marker px-2 py-px text-[#2A2A2A]' }, children),
@@ -68,9 +80,12 @@ function renderInline(node: JSONContent): Child[] {
   }
 }
 
-// block-level content — paragraphs and the sketchBox container. `paragraph`
-// takes an optional {tag, class} override so only the top-level call site can
-// customize it; paragraphs nested inside a sketchBox always render as plain <p>
+// block-level content — everything StarterKit's toolbar in UiEditor can
+// produce (paragraph, heading, bulletList/orderedList/listItem, blockquote,
+// codeBlock, horizontalRule) plus the sketchBox container. `paragraph` takes
+// an optional {tag, class} override so only the top-level call site can
+// customize it; paragraphs nested inside a sketchBox/list/quote always
+// render as plain <p>
 function renderBlock(node: JSONContent, paragraphTag = 'p', paragraphClass?: string): VNode[] {
   if (node.type === 'sketchBox') {
     const inner = (node.content ?? []).flatMap((child) => renderBlock(child))
@@ -80,6 +95,36 @@ function renderBlock(node: JSONContent, paragraphTag = 'p', paragraphClass?: str
     const inline = (node.content ?? []).flatMap(renderInline)
     return inline.length ? [h(paragraphTag, { class: paragraphClass }, inline)] : []
   }
+  if (node.type === 'heading') {
+    const inline = (node.content ?? []).flatMap(renderInline)
+    return inline.length ? [h(`h${node.attrs?.level ?? 2}`, inline)] : []
+  }
+  if (node.type === 'bulletList' || node.type === 'orderedList') {
+    const isBullet = node.type === 'bulletList'
+    const items = (node.content ?? []).flatMap((child) => renderBlock(child))
+    const start = !isBullet ? node.attrs?.start : undefined
+    // paragraphClass goes on the list itself (not the nested <li>/<p>) since
+    // color/font-size are inherited CSS properties — this keeps list text
+    // matching the surrounding prose at each call site without threading the
+    // class through every nested render call
+    const attrs = {
+      class: [isBullet ? 'list-disc' : 'list-decimal', 'space-y-1.5 pl-5 marker:text-cyan', paragraphClass],
+      ...(start && start !== 1 ? { start } : {}),
+    }
+    return items.length ? [h(isBullet ? 'ul' : 'ol', attrs, items)] : []
+  }
+  if (node.type === 'listItem') {
+    return [h('li', { class: 'pl-1' }, (node.content ?? []).flatMap((child) => renderBlock(child)))]
+  }
+  if (node.type === 'blockquote') {
+    const inner = (node.content ?? []).flatMap((child) => renderBlock(child))
+    return inner.length ? [h('blockquote', inner)] : []
+  }
+  if (node.type === 'codeBlock') {
+    const code = (node.content ?? []).flatMap(renderInline)
+    return [h('pre', h('code', code))]
+  }
+  if (node.type === 'horizontalRule') return [h('hr')]
   return []
 }
 

@@ -1,15 +1,45 @@
 import tailwindcss from '@tailwindcss/vite'
 
+// flattened fallback bio (mirrors HeroMe.vue's defaultBio TipTap doc) — used
+// as the site-wide meta description until an admin saves real overview copy
+const FALLBACK_DESCRIPTION =
+  'Senior Full-Stack Engineer. I ship end-to-end with TypeScript / Node.js on the back, ' +
+  'Next.js, Nuxt & Vue on the front, and lean on DDD, Postgres and clean test suites to keep it honest.'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint'],
+  modules: ['@nuxt/eslint', '@nuxtjs/seo'],
   eslint: {
     config: {
       stylistic: false, // you're using Prettier for formatting
     },
   },
+  site: {
+    url: 'https://oussama.work',
+    name: 'Oussama EL AMRANI',
+    description: FALLBACK_DESCRIPTION,
+    defaultLocale: 'en',
+  },
+  // authenticated app shell and API routes aren't content — keep crawlers out
+  // entirely. /login and /playground are handled per-page via `noindex`
+  // meta instead (see their useSeoMeta calls) so a crawler can still see and
+  // honor the noindex signal rather than being blind-blocked.
+  robots: {
+    disallow: ['/admin', '/api'],
+  },
+  sitemap: {
+    exclude: ['/admin/**', '/api/**', '/login', '/playground'],
+  },
+  ogImage: {
+    defaults: { component: 'Default' },
+  },
   app: {
     head: {
+      // page titles are already fully-formed brand strings (e.g. "Experience —
+      // Oussama EL AMRANI") — skip nuxt-site-config's default "%s | siteName" suffix
+      titleTemplate: '%s',
+      htmlAttrs: { lang: 'en' },
+      meta: [{ name: 'color-scheme', content: 'light dark' }],
       script: [
         {
           // apply the saved (or OS) theme before first paint to avoid a light flash

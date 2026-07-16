@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { SketchBox, UiButton, UiLink } from '@larevo/ui'
+
+// dev scratch page, no search value
+useSeoMeta({ title: 'Playground', robots: 'noindex, nofollow' })
 </script>
 <template>
   <div>
